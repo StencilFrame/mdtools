@@ -1,0 +1,79 @@
+[
+  {
+    "type": "heading",
+    "title": "Title",
+    "level": 1,
+    "content": [
+      {
+        "type": "heading",
+        "title": "Heading 1",
+        "level": 2,
+        "content": [
+          {
+            "type": "text",
+            "content": [
+              {
+                "content": "Some text with a line break.",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "title": "Heading 1.1",
+            "level": 3,
+            "content": [
+              {
+                "type": "text",
+                "content": [
+                  {
+                    "content": "Another paragraph.",
+                    "type": "text"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "title": "Heading 1.2",
+            "level": 3,
+            "content": []
+          }
+        ]
+      },
+      {
+        "type": "heading",
+        "title": "Heading 2",
+        "level": 2,
+        "content": [
+          {
+            "type": "heading",
+            "title": "Heading 2.1",
+            "level": 3,
+            "content": [
+              {
+                "type": "text",
+                "content": [
+                  {
+                    "content": "Yet another paragraph.",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "content": [
+                  {
+                    "content": "Some text with a line break.",
+                    "type": "text"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
