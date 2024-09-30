@@ -10,7 +10,7 @@
         "level": 2,
         "content": [
           {
-            "type": "text",
+            "type": "paragraph",
             "content": [
               {
                 "content": "Some text with a line break.",
@@ -24,7 +24,7 @@
             "level": 3,
             "content": [
               {
-                "type": "text",
+                "type": "paragraph",
                 "content": [
                   {
                     "content": "Another paragraph.",
@@ -53,7 +53,7 @@
             "level": 3,
             "content": [
               {
-                "type": "text",
+                "type": "paragraph",
                 "content": [
                   {
                     "content": "Yet another paragraph.",
@@ -62,7 +62,7 @@
                 ]
               },
               {
-                "type": "text",
+                "type": "paragraph",
                 "content": [
                   {
                     "content": "Some text with a line break.",

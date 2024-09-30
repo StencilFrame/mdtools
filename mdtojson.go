@@ -326,7 +326,7 @@ func extractContent(node *blackfriday.Node) *Node {
 	}
 
 	return &Node{
-		Type:    "text",
+		Type:    "paragraph",
 		Content: children,
 	}
 }
