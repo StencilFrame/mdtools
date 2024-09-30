@@ -13,9 +13,9 @@ type (
 	// Node represents a parsed Markdown element
 	Node struct {
 		Type    string      `json:"type"`
-		Title   string      `json:"title,omitempty"` // Title of the header
-		Level   int         `json:"level,omitempty"` // Level of the header
-		Content interface{} `json:"content,omitempty"`
+		Title   string      `json:"title,omitempty"`   // Title of the header
+		Level   int         `json:"level,omitempty"`   // Level of the header
+		Content interface{} `json:"content,omitempty"` // Content of the node
 	}
 
 	// Custom JSON Renderer
