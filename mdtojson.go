@@ -182,6 +182,15 @@ func (r *JSONRenderer) RenderFooter(w io.Writer, ast *blackfriday.Node) {
 	w.Write(output)
 }
 
+// Return nodes
+func (r *JSONRenderer) GetNodes() []*Node {
+	// Finalize and append any remaining headers to the root node
+	r.finalizeHeaders(0)
+
+	// Return the root nodes
+	return r.nodes
+}
+
 // handleHeader manages the heading elements and finalizes them.
 func (r *JSONRenderer) handleHeader(node *blackfriday.Node) {
 	level := node.HeadingData.Level
