@@ -23,15 +23,12 @@ func main() {
 	// Initialize a new JSONRenderer
 	renderer := NewJSONRenderer()
 
-	// Parse the markdown into a syntax tree
-	parser := blackfriday.New(blackfriday.WithExtensions(blackfriday.CommonExtensions | blackfriday.AutoHeadingIDs | blackfriday.Tables))
-	node := parser.Parse(markdownData)
+	// Convert the markdown to JSON
+	out := blackfriday.Run(markdownData,
+		blackfriday.WithExtensions(blackfriday.CommonExtensions|blackfriday.AutoHeadingIDs|blackfriday.Tables),
+		blackfriday.WithRenderer(renderer),
+	)
 
-	// Walk the parsed syntax tree with our custom renderer
-	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
-		return renderer.RenderNode(os.Stdout, n, entering)
-	})
-
-	// Print the resulting JSON
-	renderer.RenderFooter(os.Stdout, node)
+	// Write the JSON to stdout
+	os.Stdout.Write(out)
 }

@@ -33,27 +33,19 @@ func TestJSONRenderer(t *testing.T) {
 			markdownData, err := os.ReadFile(tt.inputFileName)
 			assert.NoError(t, err)
 
-			// Parse the markdown into a syntax tree
-			parser := blackfriday.New(blackfriday.WithExtensions(blackfriday.CommonExtensions | blackfriday.AutoHeadingIDs | blackfriday.Tables))
-			node := parser.Parse(markdownData)
-
-			// Create a new JSONRenderer
+			// Initialize a new JSONRenderer
 			renderer := NewJSONRenderer()
 
-			// Create a buffered writer
-			buffer := new(bytes.Buffer)
-
-			// Walk the parsed syntax tree with our custom renderer
-			node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
-				return renderer.RenderNode(buffer, n, entering)
-			})
-			// finalize the JSON
-			renderer.RenderFooter(buffer, node)
+			// Convert the markdown to JSON
+			out := blackfriday.Run(markdownData,
+				blackfriday.WithExtensions(blackfriday.CommonExtensions|blackfriday.AutoHeadingIDs|blackfriday.Tables),
+				blackfriday.WithRenderer(renderer),
+			)
 
 			// Assert the resulting JSON
 			expectedData, err := os.ReadFile(tt.expectedFileName)
 			assert.NoError(t, err)
-			assert.JSONEq(t, string(expectedData), buffer.String())
+			assert.JSONEq(t, string(expectedData), string(out))
 		})
 	}
 }
