@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bytes"
+	"io"
 	"os"
 	"testing"
 
@@ -19,6 +19,11 @@ func TestJSONRenderer(t *testing.T) {
 			name:             "Headers",
 			inputFileName:    "testdata/headers.md",
 			expectedFileName: "testdata/headers.json",
+		},
+		{
+			name:             "Tables",
+			inputFileName:    "testdata/tables.md",
+			expectedFileName: "testdata/tables.json",
 		},
 	}
 

@@ -348,30 +348,22 @@ func handleList(node *blackfriday.Node) *Node {
 
 // handleTable processes table nodes and extracts rows and cells
 func handleTable(node *blackfriday.Node) *Node {
-	var tableData []interface{}
-	var currentRow map[string]interface{}
+	var tableData interface{}
 	var headers []string
 
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		switch n.Type {
 		case blackfriday.TableHead:
 			headers = collectTableHeaders(n)
-		case blackfriday.TableRow:
-			if currentRow != nil {
-				tableData = append(tableData, currentRow)
-			}
-			currentRow = make(map[string]interface{})
-		case blackfriday.TableCell:
-			headerIndex := len(currentRow)
-			if headerIndex < len(headers) {
-				currentRow[headers[headerIndex]] = extractText(n)
+		case blackfriday.TableBody:
+			if headers[0] == "" {
+				tableData = collectTableRowsWithKeys(headers, n)
+			} else {
+				tableData = collectTableRowsRegular(headers, n)
 			}
 		}
 		return blackfriday.GoToNext
 	})
-	if len(currentRow) > 0 {
-		tableData = append(tableData, currentRow)
-	}
 	return &Node{
 		Type:    "table",
 		Content: tableData,
@@ -388,4 +380,72 @@ func collectTableHeaders(node *blackfriday.Node) []string {
 		return blackfriday.GoToNext
 	})
 	return headers
+}
+
+// collectTableRowsRegular collects the rows from a table's TableBody node
+func collectTableRowsRegular(headers []string, node *blackfriday.Node) []map[string]string {
+	var tableData []map[string]string
+	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
+		if entering && n.Type == blackfriday.TableRow {
+			currentRow := collectRowCells(headers, n)
+			tableData = append(tableData, currentRow)
+		}
+		return blackfriday.GoToNext
+	})
+
+	for i := range tableData {
+		for k, v := range tableData[i] {
+			if k == "" && v == "" {
+				delete(tableData[i], k)
+			}
+		}
+	}
+
+	return tableData
+}
+
+// collectRowCells collects the cells from a table row node
+func collectRowCells(headers []string, node *blackfriday.Node) map[string]string {
+	rowData := make(map[string]string)
+	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
+		if entering && n.Type == blackfriday.TableCell {
+			headerIndex := len(rowData)
+			if headerIndex < len(headers) {
+				rowData[headers[headerIndex]] = extractText(n)
+			}
+		}
+		return blackfriday.GoToNext
+	})
+	return rowData
+}
+
+// collectTableRowsWithKeys collects the rows from a table's TableBody node
+func collectTableRowsWithKeys(headers []string, node *blackfriday.Node) map[string]map[string]string {
+	tableData := make(map[string]map[string]string)
+	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
+		if entering && n.Type == blackfriday.TableRow {
+			key, currentRow := collectRowCellsWithKeys(headers, n)
+			tableData[key] = currentRow
+		}
+		return blackfriday.GoToNext
+	})
+	return tableData
+}
+
+// collectRowCellsWithKeys collects the cells from a table row node
+func collectRowCellsWithKeys(headers []string, node *blackfriday.Node) (key string, rowData map[string]string) {
+	firstCell := false
+	rowData = collectRowCells(headers, node)
+	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
+		if entering && n.Type == blackfriday.TableCell {
+			if !firstCell {
+				key = extractText(n)
+				firstCell = true
+				delete(rowData, headers[0])
+				return blackfriday.Terminate
+			}
+		}
+		return blackfriday.GoToNext
+	})
+	return key, rowData
 }
