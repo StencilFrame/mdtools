@@ -73,15 +73,6 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 				Type: "line-separator",
 			}
 
-		case blackfriday.Emph:
-			contentNode = extractFormattedText(node, "italic")
-
-		case blackfriday.Strong:
-			contentNode = extractFormattedText(node, "bold")
-
-		case blackfriday.Del:
-			contentNode = extractFormattedText(node, "strikethrough")
-
 		case blackfriday.BlockQuote:
 			quoteContent := extractContent(node)
 			contentNode = &Node{
@@ -268,15 +259,6 @@ func extractText(node *blackfriday.Node) string {
 	return buffer.String()
 }
 
-// extractFormattedText processes inline formatted elements (like bold, italic) within a paragraph.
-func extractFormattedText(node *blackfriday.Node, formatType string) *Node {
-	text := extractText(node) // Extract formatted text
-	return &Node{
-		Type:    formatType,
-		Content: text,
-	}
-}
-
 // extractContent handles text nodes, links, images, and inline elements.
 func extractContent(node *blackfriday.Node) *Node {
 	var buffer bytes.Buffer
@@ -305,21 +287,6 @@ func extractContent(node *blackfriday.Node) *Node {
 					},
 				}
 				children = append(children, imageNode)
-			case blackfriday.Emph:
-				children = append(children, map[string]interface{}{
-					"type":    "italic",
-					"content": extractText(n),
-				})
-			case blackfriday.Strong:
-				children = append(children, map[string]interface{}{
-					"type":    "bold",
-					"content": extractText(n),
-				})
-			case blackfriday.Code:
-				children = append(children, map[string]interface{}{
-					"type":    "code",
-					"content": string(n.Literal),
-				})
 			}
 		}
 		return blackfriday.GoToNext
