@@ -1,0 +1,119 @@
+[
+  {
+    "type": "paragraph",
+    "content": [
+      {
+        "type": "text",
+        "content": "This is a paragraph with an "
+      },
+      {
+        "type": "image",
+        "content": {
+          "alt": "image",
+          "url": "https://example.com/image.png"
+        }
+      },
+      {
+        "type": "text",
+        "content": "."
+      }
+    ]
+  },
+  {
+    "type": "paragraph",
+    "content": [
+      {
+        "type": "text",
+        "content": "This is a list with images:"
+      }
+    ]
+  },
+  {
+    "type": "list",
+    "content": [
+      {
+        "type": "list-item",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "content": "List item with an "
+              },
+              {
+                "type": "image",
+                "content": {
+                  "alt": "image",
+                  "url": "https://example.com/list-image.png"
+                }
+              },
+              {
+                "type": "text",
+                "content": ""
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "content": [
+              {
+                "type": "list-item",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "content": "Nested item with an "
+                      },
+                      {
+                        "type": "image",
+                        "content": {
+                          "alt": "image1",
+                          "url": "https://example.com/nested-image.png"
+                        }
+                      },
+                      {
+                        "type": "text",
+                        "content": ""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "paragraph",
+    "content": [
+      {
+        "type": "text",
+        "content": "This is an image reference:"
+      }
+    ]
+  },
+  {
+    "type": "paragraph",
+    "content": [
+      {
+        "type": "text",
+        "content": ""
+      },
+      {
+        "type": "image",
+        "content": {
+          "alt": "image-b64",
+          "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVBAMAAABbObilAAAAMFBMVEX///9wcHBwcHBwcHBwcHBwcHBwcHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKeozJAAAABnRSTlMAZoiZzN091q78AAAAOElEQVR4XmP8zwADH5ngTAYGarI/KTB8EgLSLCCBTwqfsKnhY/jE8A4m/gDIZYCq5wOJYqqnBhsA1zsKECM4W0sAAAAASUVORK5CYII=\u003e"
+        }
+      }
+    ]
+  },
+  {
+    "type": "line-separator"
+  }
+]

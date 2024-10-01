@@ -107,15 +107,6 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 				},
 			}
 
-		case blackfriday.Image:
-			contentNode = &Node{
-				Type: "image",
-				Content: map[string]string{
-					"url": string(node.LinkData.Destination),
-					"alt": string(node.LinkData.Title),
-				},
-			}
-
 		case blackfriday.HTMLBlock:
 			htmlContent := string(node.Literal)
 			contentNode = &Node{
@@ -269,6 +260,16 @@ func extractContent(node *blackfriday.Node) *Node {
 					},
 				}
 				children = append(children, link)
+				return blackfriday.SkipChildren
+			case blackfriday.Image:
+				image := &Node{
+					Type: "image",
+					Content: map[string]string{
+						"url": string(n.LinkData.Destination),
+						"alt": extractText(n),
+					},
+				}
+				children = append(children, image)
 				return blackfriday.SkipChildren
 			}
 		}
