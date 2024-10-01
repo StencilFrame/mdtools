@@ -51,11 +51,23 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 
 		case blackfriday.Table:
 			contentNode = handleTable(node)
+			if r.currentNode != nil {
+				r.currentNode.Content = appendContent(r.currentNode.Content, contentNode)
+			} else {
+				r.nodes = append(r.nodes, contentNode)
+			}
+			return blackfriday.SkipChildren
 
 		case blackfriday.List:
 			contentNode = handleList(node)
+			if r.currentNode != nil {
+				r.currentNode.Content = appendContent(r.currentNode.Content, contentNode)
+			} else {
+				r.nodes = append(r.nodes, contentNode)
+			}
+			return blackfriday.SkipChildren
 
-		case blackfriday.Paragraph, blackfriday.Item:
+		case blackfriday.Paragraph:
 			contentNode = extractContent(node)
 
 		case blackfriday.Hardbreak:
@@ -261,45 +273,21 @@ func extractText(node *blackfriday.Node) string {
 
 // extractContent handles text nodes, links, images, and inline elements.
 func extractContent(node *blackfriday.Node) *Node {
-	var buffer bytes.Buffer
 	children := []interface{}{}
 
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
-		if entering {
-			switch n.Type {
-			case blackfriday.Text:
-				buffer.Write(n.Literal)
-			case blackfriday.Link:
-				linkNode := &Node{
-					Type: "link",
-					Content: map[string]string{
-						"text": string(n.FirstChild.Literal),
-						"url":  string(n.LinkData.Destination),
-					},
-				}
-				children = append(children, linkNode)
-			case blackfriday.Image:
-				imageNode := &Node{
-					Type: "image",
-					Content: map[string]string{
-						"alt": string(n.FirstChild.Literal),
-						"url": string(n.LinkData.Destination),
-					},
-				}
-				children = append(children, imageNode)
+		if entering && n.Type == blackfriday.Text {
+			item := &Node{
+				Type:    "text",
+				Content: extractText(n),
 			}
+			children = append(children, item)
+		}
+		if entering && n.Type == blackfriday.List {
+			return blackfriday.SkipChildren
 		}
 		return blackfriday.GoToNext
 	})
-
-	if buffer.Len() > 0 {
-		children = append([]interface{}{
-			map[string]interface{}{
-				"type":    "text",
-				"content": buffer.String(),
-			},
-		}, children...)
-	}
 
 	return &Node{
 		Type:    "paragraph",
@@ -312,13 +300,38 @@ func handleList(node *blackfriday.Node) *Node {
 	var listItems []interface{}
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering && n.Type == blackfriday.Item {
-			listItems = append(listItems, extractContent(n))
+			listItem := extractListItems(n)
+			listItems = append(listItems, listItem)
+			return blackfriday.SkipChildren
 		}
 		return blackfriday.GoToNext
 	})
 	return &Node{
 		Type:    "list",
 		Content: listItems,
+	}
+}
+
+// extractListItems extracts list items from a list node
+func extractListItems(node *blackfriday.Node) *Node {
+	children := []interface{}{}
+
+	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
+		if entering && n.Type == blackfriday.List {
+			list := handleList(n)
+			children = append(children, list)
+			return blackfriday.SkipChildren
+		}
+		if entering && n.Type == blackfriday.Item {
+			listItem := extractContent(n)
+			children = append(children, listItem)
+		}
+		return blackfriday.GoToNext
+	})
+
+	return &Node{
+		Type:    "list-item",
+		Content: children,
 	}
 }
 

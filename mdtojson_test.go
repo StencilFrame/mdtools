@@ -24,6 +24,11 @@ func TestJSONRenderer(t *testing.T) {
 			inputFileName:    "testdata/tables.md",
 			expectedFileName: "testdata/tables.json",
 		},
+		{
+			name:             "Lists",
+			inputFileName:    "testdata/lists.md",
+			expectedFileName: "testdata/lists.json",
+		},
 	}
 
 	for _, tt := range tests {

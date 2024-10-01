@@ -1,0 +1,143 @@
+[
+  {
+    "type": "list",
+    "content": [
+      {
+        "type": "list-item",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "content": "List item with 1"
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "content": [
+              {
+                "type": "list-item",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "content": "Nested item 1.2"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list-item",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "content": "List Item 2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list-item",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "content": "List Item 3"
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "content": [
+              {
+                "type": "list-item",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "content": "Nested item 3.2"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "list-item",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "content": "Nested item 3.3"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "paragraph",
+    "content": [
+      {
+        "type": "text",
+        "content": "Simple paragraph."
+      }
+    ]
+  },
+  {
+    "type": "list",
+    "content": [
+      {
+        "type": "list-item",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "content": "List 2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "list-item",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "content": "List 3"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
