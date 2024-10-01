@@ -15,7 +15,7 @@ type (
 		nodes         []Node            // Root-level nodes
 		headerStack   []*HeadingNode    // Stack to manage nested headers
 		currentHeader *HeadingNode      // Current header node
-		imageRefs     map[string]string // Stores image references (e.g., [image1]: <url>)
+		imageRefs     map[string]string // Stores image references (e.g., [image1]: <url>) // TODO: Implement image handling
 	}
 )
 
@@ -86,6 +86,7 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 			language := string(node.Info)
 			contentNode = NewCodeBlockNode(codeContent, language)
 
+			// TODO: Implement HTML block and span handling
 			// case blackfriday.HTMLBlock:
 			// 	htmlContent := string(node.Literal)
 			// 	contentNode = &BaseNode{
