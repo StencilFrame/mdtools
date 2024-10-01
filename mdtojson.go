@@ -20,10 +20,10 @@ type (
 
 	// Custom JSON Renderer
 	JSONRenderer struct {
-		nodes       []*Node           // Root-level nodes
-		headerStack []*Node           // Stack to manage nested headers
-		currentNode *Node             // Current header node
-		imageRefs   map[string]string // Stores image references (e.g., [image1]: <url>)
+		nodes         []*Node           // Root-level nodes
+		headerStack   []*Node           // Stack to manage nested headers
+		currentHeader *Node             // Current header node
+		imageRefs     map[string]string // Stores image references (e.g., [image1]: <url>)
 	}
 )
 
@@ -48,8 +48,8 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 
 		case blackfriday.Table:
 			contentNode = handleTable(node)
-			if r.currentNode != nil {
-				r.currentNode.Content = appendContent(r.currentNode.Content, contentNode)
+			if r.currentHeader != nil {
+				r.currentHeader.Content = appendContent(r.currentHeader.Content, contentNode)
 			} else {
 				r.nodes = append(r.nodes, contentNode)
 			}
@@ -57,8 +57,8 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 
 		case blackfriday.List:
 			contentNode = handleList(node)
-			if r.currentNode != nil {
-				r.currentNode.Content = appendContent(r.currentNode.Content, contentNode)
+			if r.currentHeader != nil {
+				r.currentHeader.Content = appendContent(r.currentHeader.Content, contentNode)
 			} else {
 				r.nodes = append(r.nodes, contentNode)
 			}
@@ -132,8 +132,8 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 		}
 
 		if contentNode != nil {
-			if r.currentNode != nil {
-				r.currentNode.Content = appendContent(r.currentNode.Content, contentNode)
+			if r.currentHeader != nil {
+				r.currentHeader.Content = appendContent(r.currentHeader.Content, contentNode)
 			} else {
 				r.nodes = append(r.nodes, contentNode)
 			}
@@ -185,13 +185,13 @@ func (r *JSONRenderer) handleHeader(node *blackfriday.Node) {
 	r.headerStack = append(r.headerStack, headerNode)
 
 	// Set the new header as the currentNode
-	r.currentNode = headerNode
+	r.currentHeader = headerNode
 }
 
 // finalizeHeaders handles appending all headers to `r.nodes`
 func (r *JSONRenderer) finalizeHeaders(level int) {
 	// If there's an existing header being processed, finalize and store it in the stack
-	if r.currentNode != nil {
+	if r.currentHeader != nil {
 		finishedHeaders := []*Node{}
 		// Pop headers from the stack if the new header has a lower or equal level
 		for len(r.headerStack) > 0 && level <= r.headerStack[len(r.headerStack)-1].Level {
