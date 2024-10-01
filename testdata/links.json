@@ -1,0 +1,91 @@
+[
+  {
+    "type": "paragraph",
+    "content": [
+      {
+        "type": "text",
+        "content": "This is a paragraph with a "
+      },
+      {
+        "type": "link",
+        "content": {
+          "text": "link",
+          "url": "https://example.com"
+        }
+      },
+      {
+        "type": "text",
+        "content": "."
+      }
+    ]
+  },
+  {
+    "type": "paragraph",
+    "content": [
+      {
+        "type": "text",
+        "content": "This is a list with links:"
+      }
+    ]
+  },
+  {
+    "type": "list",
+    "content": [
+      {
+        "type": "list-item",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "content": "List item with a "
+              },
+              {
+                "type": "link",
+                "content": {
+                  "text": "link",
+                  "url": "https://example.com/list-link"
+                }
+              },
+              {
+                "type": "text",
+                "content": ""
+              }
+            ]
+          },
+          {
+            "type": "list",
+            "content": [
+              {
+                "type": "list-item",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "content": "Nested item with "
+                      },
+                      {
+                        "type": "link",
+                        "content": {
+                          "text": "another link",
+                          "url": "https://example.com/nested-link"
+                        }
+                      },
+                      {
+                        "type": "text",
+                        "content": ""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

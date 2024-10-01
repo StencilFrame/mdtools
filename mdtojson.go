@@ -23,9 +23,6 @@ type (
 		nodes       []*Node           // Root-level nodes
 		headerStack []*Node           // Stack to manage nested headers
 		currentNode *Node             // Current header node
-		inLink      bool              // Whether we are inside a link node
-		linkBuffer  bytes.Buffer      // Buffer for link text
-		linkUrl     string            // Stores the link URL
 		imageRefs   map[string]string // Stores image references (e.g., [image1]: <url>)
 	}
 )
@@ -132,11 +129,6 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 				Type:    "html-span",
 				Content: htmlContent,
 			}
-
-		case blackfriday.Link:
-			r.inLink = true
-			r.linkUrl = string(node.LinkData.Destination)
-			r.linkBuffer.Reset()
 		}
 
 		if contentNode != nil {
@@ -144,25 +136,6 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 				r.currentNode.Content = appendContent(r.currentNode.Content, contentNode)
 			} else {
 				r.nodes = append(r.nodes, contentNode)
-			}
-		}
-	} else {
-		switch node.Type {
-		case blackfriday.Link:
-			r.inLink = false
-			linkText := r.linkBuffer.String()
-
-			linkNode := &Node{
-				Type: "link",
-				Content: map[string]string{
-					"url":  r.linkUrl,
-					"text": linkText,
-				},
-			}
-			if r.currentNode != nil {
-				r.currentNode.Content = appendContent(r.currentNode.Content, linkNode)
-			} else {
-				r.nodes = append(r.nodes, linkNode)
 			}
 		}
 	}
@@ -285,6 +258,17 @@ func extractContent(node *blackfriday.Node) *Node {
 				}
 				children = append(children, item)
 			case blackfriday.List:
+				return blackfriday.SkipChildren
+			case blackfriday.Link:
+				linkUrl := string(n.LinkData.Destination)
+				link := &Node{
+					Type: "link",
+					Content: map[string]string{
+						"url":  linkUrl,
+						"text": extractText(n),
+					},
+				}
+				children = append(children, link)
 				return blackfriday.SkipChildren
 			}
 		}
