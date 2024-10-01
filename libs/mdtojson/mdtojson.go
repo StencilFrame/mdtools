@@ -10,19 +10,11 @@ import (
 )
 
 type (
-	// Node represents a parsed Markdown element
-	Node struct {
-		Type    string      `json:"type"`
-		Title   string      `json:"title,omitempty"`   // Title of the header
-		Level   int         `json:"level,omitempty"`   // Level of the header
-		Content interface{} `json:"content,omitempty"` // Content of the node
-	}
-
 	// Custom JSON Renderer
 	JSONRenderer struct {
-		nodes         []*Node           // Root-level nodes
-		headerStack   []*Node           // Stack to manage nested headers
-		currentHeader *Node             // Current header node
+		nodes         []Node            // Root-level nodes
+		headerStack   []*HeadingNode    // Stack to manage nested headers
+		currentHeader *HeadingNode      // Current header node
 		imageRefs     map[string]string // Stores image references (e.g., [image1]: <url>)
 	}
 )
@@ -37,7 +29,7 @@ func NewJSONRenderer() *JSONRenderer {
 // RenderNode processes each node and converts it to a JSON-friendly structure
 func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 	if entering {
-		var contentNode *Node
+		var contentNode Node
 		switch node.Type {
 		case blackfriday.Document:
 			// Document is the root node, no specific action needed other than ensuring the document is parsed
@@ -49,7 +41,7 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 		case blackfriday.Table:
 			contentNode = handleTable(node)
 			if r.currentHeader != nil {
-				r.currentHeader.Content = appendContent(r.currentHeader.Content, contentNode)
+				r.currentHeader.SetChildren(append(r.currentHeader.GetChildren(), contentNode))
 			} else {
 				r.nodes = append(r.nodes, contentNode)
 			}
@@ -58,66 +50,60 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 		case blackfriday.List:
 			contentNode = handleList(node)
 			if r.currentHeader != nil {
-				r.currentHeader.Content = appendContent(r.currentHeader.Content, contentNode)
+				r.currentHeader.SetChildren(append(r.currentHeader.GetChildren(), contentNode))
 			} else {
 				r.nodes = append(r.nodes, contentNode)
 			}
 			return blackfriday.SkipChildren
 
 		case blackfriday.Paragraph:
-			contentNode = extractContent(node)
+			contentNode = handleParagraph(node)
 
 		case blackfriday.Hardbreak:
-			contentNode = &Node{
+			contentNode = &BaseNode{
 				Type: "line-break",
 			}
 
 		case blackfriday.Softbreak:
-			contentNode = &Node{
+			contentNode = &BaseNode{
 				Type: "softbreak",
 			}
 
 		case blackfriday.HorizontalRule:
-			contentNode = &Node{
+			contentNode = &BaseNode{
 				Type: "line-separator",
 			}
 
 		case blackfriday.BlockQuote:
 			quoteContent := extractContent(node)
-			contentNode = &Node{
-				Type:    "blockquote",
-				Content: quoteContent,
+			contentNode = &BaseNode{
+				Type:     "blockquote",
+				Children: quoteContent,
 			}
 
 		case blackfriday.CodeBlock:
 			codeContent := string(node.Literal)
 			language := string(node.Info)
-			contentNode = &Node{
-				Type: "code-block",
-				Content: map[string]string{
-					"code":     codeContent,
-					"language": language,
-				},
-			}
+			contentNode = NewCodeBlockNode(codeContent, language)
 
-		case blackfriday.HTMLBlock:
-			htmlContent := string(node.Literal)
-			contentNode = &Node{
-				Type:    "html-block",
-				Content: htmlContent,
-			}
+			// case blackfriday.HTMLBlock:
+			// 	htmlContent := string(node.Literal)
+			// 	contentNode = &BaseNode{
+			// 		Type:     "html-block",
+			// 		Children: htmlContent,
+			// 	}
 
-		case blackfriday.HTMLSpan:
-			htmlContent := string(node.Literal)
-			contentNode = &Node{
-				Type:    "html-span",
-				Content: htmlContent,
-			}
+			// case blackfriday.HTMLSpan:
+			// 	htmlContent := string(node.Literal)
+			// 	contentNode = &BaseNode{
+			// 		Type:     "html-span",
+			// 		Children: htmlContent,
+			// 	}
 		}
 
 		if contentNode != nil {
 			if r.currentHeader != nil {
-				r.currentHeader.Content = appendContent(r.currentHeader.Content, contentNode)
+				r.currentHeader.SetChildren(append(r.currentHeader.GetChildren(), contentNode))
 			} else {
 				r.nodes = append(r.nodes, contentNode)
 			}
@@ -143,7 +129,7 @@ func (r *JSONRenderer) RenderFooter(w io.Writer, ast *blackfriday.Node) {
 }
 
 // Return nodes
-func (r *JSONRenderer) GetNodes() []*Node {
+func (r *JSONRenderer) GetNodes() []Node {
 	// Finalize and append any remaining headers to the root node
 	r.finalizeHeaders(0)
 
@@ -155,12 +141,7 @@ func (r *JSONRenderer) GetNodes() []*Node {
 func (r *JSONRenderer) handleHeader(node *blackfriday.Node) {
 	level := node.HeadingData.Level
 	headerText := extractText(node) // Extract heading text
-	headerNode := &Node{
-		Type:    "heading",
-		Title:   headerText,      // The title of the header
-		Level:   level,           // The level of the header
-		Content: []interface{}{}, // Content under this header
-	}
+	headerNode := NewHeadingNode(level, headerText).(*HeadingNode)
 
 	// Finalize and append any remaining headers
 	r.finalizeHeaders(level)
@@ -176,7 +157,7 @@ func (r *JSONRenderer) handleHeader(node *blackfriday.Node) {
 func (r *JSONRenderer) finalizeHeaders(level int) {
 	// If there's an existing header being processed, finalize and store it in the stack
 	if r.currentHeader != nil {
-		finishedHeaders := []*Node{}
+		finishedHeaders := []Node{}
 		// Pop headers from the stack if the new header has a lower or equal level
 		for len(r.headerStack) > 0 && level <= r.headerStack[len(r.headerStack)-1].Level {
 			finishedHeader := r.headerStack[len(r.headerStack)-1]
@@ -185,7 +166,7 @@ func (r *JSONRenderer) finalizeHeaders(level int) {
 			// Append the finished header as content to the parent header or root
 			if len(r.headerStack) > 0 {
 				parentHeader := r.headerStack[len(r.headerStack)-1]
-				parentHeader.Content = appendContent(parentHeader.Content, finishedHeader)
+				parentHeader.SetChildren(append(parentHeader.GetChildren(), finishedHeader))
 			} else {
 				finishedHeaders = append(finishedHeaders, finishedHeader)
 			}
@@ -195,24 +176,12 @@ func (r *JSONRenderer) finalizeHeaders(level int) {
 		if len(r.headerStack) > 0 {
 			parent := r.headerStack[len(r.headerStack)-1]
 			for i := 0; i < len(finishedHeaders); i++ {
-				parent.Content = appendContent(parent.Content, finishedHeaders[i])
+				parent.SetChildren(append(parent.GetChildren(), finishedHeaders[i]))
 			}
 		} else {
 			// Append the finished headers to the root nodes
 			r.nodes = append(r.nodes, finishedHeaders...)
 		}
-	}
-}
-
-// appendContent appends new content to the current header's content array
-func appendContent(existingContent interface{}, newContent interface{}) interface{} {
-	switch content := existingContent.(type) {
-	case []interface{}:
-		return append(content, newContent)
-	case *Node:
-		return []interface{}{content, newContent}
-	default:
-		return newContent
 	}
 }
 
@@ -229,8 +198,8 @@ func extractText(node *blackfriday.Node) string {
 }
 
 // extractContent handles text nodes, links, images, and inline elements.
-func extractContent(node *blackfriday.Node) *Node {
-	children := []interface{}{}
+func extractContent(node *blackfriday.Node) []Node {
+	children := []Node{}
 
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering {
@@ -240,55 +209,44 @@ func extractContent(node *blackfriday.Node) *Node {
 				if content == "" {
 					return blackfriday.GoToNext
 				}
-				item := &Node{
-					Type:    "text",
-					Content: content,
-				}
+				item := NewTextNode(content)
 				children = append(children, item)
 			case blackfriday.List:
 				return blackfriday.SkipChildren
 			case blackfriday.Link:
 				linkUrl := string(n.LinkData.Destination)
-				link := &Node{
-					Type: "link",
-					Content: map[string]string{
-						"url":  linkUrl,
-						"text": extractText(n),
-					},
-				}
+				link := NewLinkNode(linkUrl, extractText(n))
 				children = append(children, link)
 				return blackfriday.SkipChildren
 			case blackfriday.Image:
-				image := &Node{
-					Type: "image",
-					Content: map[string]string{
-						"url": string(n.LinkData.Destination),
-						"alt": extractText(n),
-					},
-				}
+				image := NewImageNode(string(n.LinkData.Destination), extractText(n))
 				children = append(children, image)
 				return blackfriday.SkipChildren
 			case blackfriday.Code:
 				codeContent := string(n.Literal)
-				code := &Node{
-					Type:    "code",
-					Content: codeContent,
-				}
+				code := NewCodeNode(codeContent)
 				children = append(children, code)
 			}
 		}
 		return blackfriday.GoToNext
 	})
 
-	return &Node{
-		Type:    "paragraph",
-		Content: children,
+	return children
+}
+
+// handleParagraph processes paragraph nodes and extracts text content
+func handleParagraph(node *blackfriday.Node) Node {
+	children := extractContent(node)
+
+	return &BaseNode{
+		Type:     "paragraph",
+		Children: children,
 	}
 }
 
 // handleList processes list nodes and extracts list items
-func handleList(node *blackfriday.Node) *Node {
-	var listItems []interface{}
+func handleList(node *blackfriday.Node) Node {
+	var listItems []Node
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering && n.Type == blackfriday.Item {
 			listItem := extractListItems(n)
@@ -297,15 +255,15 @@ func handleList(node *blackfriday.Node) *Node {
 		}
 		return blackfriday.GoToNext
 	})
-	return &Node{
-		Type:    "list",
-		Content: listItems,
+	return &BaseNode{
+		Type:     "list",
+		Children: listItems,
 	}
 }
 
 // extractListItems extracts list items from a list node
-func extractListItems(node *blackfriday.Node) *Node {
-	children := []interface{}{}
+func extractListItems(node *blackfriday.Node) Node {
+	children := []Node{}
 
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering {
@@ -315,21 +273,21 @@ func extractListItems(node *blackfriday.Node) *Node {
 				children = append(children, list)
 				return blackfriday.SkipChildren
 			case blackfriday.Item:
-				listItem := extractContent(n)
+				listItem := handleParagraph(n)
 				children = append(children, listItem)
 			}
 		}
 		return blackfriday.GoToNext
 	})
 
-	return &Node{
-		Type:    "list-item",
-		Content: children,
+	return &BaseNode{
+		Type:     "list-item",
+		Children: children,
 	}
 }
 
 // handleTable processes table nodes and extracts rows and cells
-func handleTable(node *blackfriday.Node) *Node {
+func handleTable(node *blackfriday.Node) Node {
 	var tableData interface{}
 	var headers []string
 
@@ -346,10 +304,7 @@ func handleTable(node *blackfriday.Node) *Node {
 		}
 		return blackfriday.GoToNext
 	})
-	return &Node{
-		Type:    "table",
-		Content: tableData,
-	}
+	return NewTableNode(tableData)
 }
 
 // collectTableHeaders collects the headers from the table's TableHead node

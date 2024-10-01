@@ -10,7 +10,7 @@
             "content": [
               {
                 "type": "text",
-                "content": "List item with 1"
+                "text": "List item with 1"
               }
             ]
           },
@@ -25,7 +25,7 @@
                     "content": [
                       {
                         "type": "text",
-                        "content": "Nested item 1.2"
+                        "text": "Nested item 1.2"
                       }
                     ]
                   }
@@ -43,7 +43,7 @@
             "content": [
               {
                 "type": "text",
-                "content": "List Item 2"
+                "text": "List Item 2"
               }
             ]
           }
@@ -57,7 +57,7 @@
             "content": [
               {
                 "type": "text",
-                "content": "List Item 3"
+                "text": "List Item 3"
               }
             ]
           },
@@ -72,7 +72,7 @@
                     "content": [
                       {
                         "type": "text",
-                        "content": "Nested item 3.2"
+                        "text": "Nested item 3.2"
                       }
                     ]
                   }
@@ -86,7 +86,7 @@
                     "content": [
                       {
                         "type": "text",
-                        "content": "Nested item 3.3"
+                        "text": "Nested item 3.3"
                       }
                     ]
                   }
@@ -103,7 +103,7 @@
     "content": [
       {
         "type": "text",
-        "content": "Simple paragraph."
+        "text": "Simple paragraph."
       }
     ]
   },
@@ -118,7 +118,7 @@
             "content": [
               {
                 "type": "text",
-                "content": "List 2"
+                "text": "List 2"
               }
             ]
           }
@@ -132,7 +132,7 @@
             "content": [
               {
                 "type": "text",
-                "content": "List 3"
+                "text": "List 3"
               }
             ]
           }

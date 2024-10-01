@@ -1,7 +1,7 @@
 [
   {
     "type": "table",
-    "content": [
+    "data": [
       {
         "Header 1": "Cell 1",
         "Header 2": "Cell 2",
@@ -16,7 +16,7 @@
   },
   {
     "type": "table",
-    "content": {
+    "data": {
       "Row 1": {
         "Header 1": "Cell 1",
         "Header 2": "Cell 2",
@@ -31,7 +31,7 @@
   },
   {
     "type": "table",
-    "content": [
+    "data": [
       {
         "Header 1": "Cell 5",
         "Header 2": "Cell 6"
@@ -44,7 +44,7 @@
   },
   {
     "type": "table",
-    "content": {
+    "data": {
       "Row 1": {
         "Header 1": "Cell 1",
         "Header 2": "Cell 2"

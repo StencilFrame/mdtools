@@ -13,7 +13,7 @@
             "type": "paragraph",
             "content": [
               {
-                "content": "Some text with a line break.",
+                "text": "Some text with a line break.",
                 "type": "text"
               }
             ]
@@ -27,7 +27,7 @@
                 "type": "paragraph",
                 "content": [
                   {
-                    "content": "Another paragraph.",
+                    "text": "Another paragraph.",
                     "type": "text"
                   }
                 ]
@@ -37,8 +37,7 @@
           {
             "type": "heading",
             "title": "Heading 1.2",
-            "level": 3,
-            "content": []
+            "level": 3
           }
         ]
       },
@@ -56,7 +55,7 @@
                 "type": "paragraph",
                 "content": [
                   {
-                    "content": "Yet another paragraph.",
+                    "text": "Yet another paragraph.",
                     "type": "text"
                   }
                 ]
@@ -65,7 +64,7 @@
                 "type": "paragraph",
                 "content": [
                   {
-                    "content": "Some text with a line break.",
+                    "text": "Some text with a line break.",
                     "type": "text"
                   }
                 ]
