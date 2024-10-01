@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"mdtojson/libs/mdtojson"
 	"os"
 
 	"github.com/russross/blackfriday/v2"
@@ -21,7 +22,7 @@ func main() {
 	}
 
 	// Initialize a new JSONRenderer
-	renderer := NewJSONRenderer()
+	renderer := mdtojson.NewJSONRenderer()
 
 	// Convert the markdown to JSON
 	out := blackfriday.Run(markdownData,
