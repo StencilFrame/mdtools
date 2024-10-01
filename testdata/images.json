@@ -47,10 +47,6 @@
                   "alt": "image",
                   "url": "https://example.com/list-image.png"
                 }
-              },
-              {
-                "type": "text",
-                "content": ""
               }
             ]
           },
@@ -73,10 +69,6 @@
                           "alt": "image1",
                           "url": "https://example.com/nested-image.png"
                         }
-                      },
-                      {
-                        "type": "text",
-                        "content": ""
                       }
                     ]
                   }
@@ -100,10 +92,6 @@
   {
     "type": "paragraph",
     "content": [
-      {
-        "type": "text",
-        "content": ""
-      },
       {
         "type": "image",
         "content": {

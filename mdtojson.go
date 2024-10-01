@@ -243,9 +243,13 @@ func extractContent(node *blackfriday.Node) *Node {
 		if entering {
 			switch n.Type {
 			case blackfriday.Text:
+				content := extractText(n)
+				if content == "" {
+					return blackfriday.GoToNext
+				}
 				item := &Node{
 					Type:    "text",
-					Content: extractText(n),
+					Content: content,
 				}
 				children = append(children, item)
 			case blackfriday.List:

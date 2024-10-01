@@ -47,10 +47,6 @@
                   "text": "link",
                   "url": "https://example.com/list-link"
                 }
-              },
-              {
-                "type": "text",
-                "content": ""
               }
             ]
           },
@@ -73,10 +69,6 @@
                           "text": "another link",
                           "url": "https://example.com/nested-link"
                         }
-                      },
-                      {
-                        "type": "text",
-                        "content": ""
                       }
                     ]
                   }
