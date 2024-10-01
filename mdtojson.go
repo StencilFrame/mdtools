@@ -276,15 +276,17 @@ func extractContent(node *blackfriday.Node) *Node {
 	children := []interface{}{}
 
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
-		if entering && n.Type == blackfriday.Text {
-			item := &Node{
-				Type:    "text",
-				Content: extractText(n),
+		if entering {
+			switch n.Type {
+			case blackfriday.Text:
+				item := &Node{
+					Type:    "text",
+					Content: extractText(n),
+				}
+				children = append(children, item)
+			case blackfriday.List:
+				return blackfriday.SkipChildren
 			}
-			children = append(children, item)
-		}
-		if entering && n.Type == blackfriday.List {
-			return blackfriday.SkipChildren
 		}
 		return blackfriday.GoToNext
 	})
@@ -317,14 +319,16 @@ func extractListItems(node *blackfriday.Node) *Node {
 	children := []interface{}{}
 
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
-		if entering && n.Type == blackfriday.List {
-			list := handleList(n)
-			children = append(children, list)
-			return blackfriday.SkipChildren
-		}
-		if entering && n.Type == blackfriday.Item {
-			listItem := extractContent(n)
-			children = append(children, listItem)
+		if entering {
+			switch n.Type {
+			case blackfriday.List:
+				list := handleList(n)
+				children = append(children, list)
+				return blackfriday.SkipChildren
+			case blackfriday.Item:
+				listItem := extractContent(n)
+				children = append(children, listItem)
+			}
 		}
 		return blackfriday.GoToNext
 	})
