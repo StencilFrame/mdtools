@@ -89,13 +89,6 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 				Content: quoteContent,
 			}
 
-		case blackfriday.Code:
-			codeContent := string(node.Literal)
-			contentNode = &Node{
-				Type:    "code",
-				Content: codeContent,
-			}
-
 		case blackfriday.CodeBlock:
 			codeContent := string(node.Literal)
 			language := string(node.Info)
@@ -275,6 +268,13 @@ func extractContent(node *blackfriday.Node) *Node {
 				}
 				children = append(children, image)
 				return blackfriday.SkipChildren
+			case blackfriday.Code:
+				codeContent := string(n.Literal)
+				code := &Node{
+					Type:    "code",
+					Content: codeContent,
+				}
+				children = append(children, code)
 			}
 		}
 		return blackfriday.GoToNext
