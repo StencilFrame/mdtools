@@ -1,4 +1,4 @@
-module mdtojson
+module mdtools
 
 go 1.23.0
 

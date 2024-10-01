@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"mdtojson/libs/mdtojson"
+	"mdtools/libs/mdtojson"
 	"os"
 
 	"github.com/russross/blackfriday/v2"
