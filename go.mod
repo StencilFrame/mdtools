@@ -1,4 +1,4 @@
-module mdtools
+module github.com/stencilframe/mdtools
 
 go 1.23.0
 
