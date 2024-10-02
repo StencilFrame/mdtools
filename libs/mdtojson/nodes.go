@@ -3,7 +3,8 @@ package mdtojson
 import (
 	"encoding/json"
 	"fmt"
-	ordered "mdtools/libs/ordered_map"
+
+	ordered "github.com/stencilframe/mdtools/libs/ordered_map"
 )
 
 const (

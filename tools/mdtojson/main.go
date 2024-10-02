@@ -2,10 +2,10 @@ package main
 
 import (
 	"log"
-	"mdtools/libs/mdtojson"
 	"os"
 
 	"github.com/russross/blackfriday/v2"
+	"github.com/stencilframe/mdtools/libs/mdtojson"
 )
 
 func main() {

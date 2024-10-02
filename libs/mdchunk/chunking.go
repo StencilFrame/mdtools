@@ -3,9 +3,9 @@ package mdchunk
 import (
 	"fmt"
 	"io"
-	"mdtools/libs/mdtojson"
 
 	"github.com/russross/blackfriday/v2"
+	"github.com/stencilframe/mdtools/libs/mdtojson"
 )
 
 // Token limit per chunk (e.g., 200 tokens)

@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
-	"mdtools/libs/mdchunk"
 	"os"
 	"strings"
+
+	"github.com/stencilframe/mdtools/libs/mdchunk"
 )
 
 func main() {

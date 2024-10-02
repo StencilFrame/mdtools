@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"io"
 	"log"
-	ordered "mdtools/libs/ordered_map"
 
 	"github.com/russross/blackfriday/v2"
+	ordered "github.com/stencilframe/mdtools/libs/ordered_map"
 )
 
 type (
