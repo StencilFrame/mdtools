@@ -223,21 +223,23 @@ func (n *TableNode) ChunkTable(charLimit int) []string {
 		// Split the table into chunks
 		for _, row := range data {
 			j, _ := json.Marshal(row)
-			chunk += string(j) + ",\n"
-			if len(chunk) > charLimit {
+			part := string(j) + ",\n"
+			if len(chunk)+len(part) > charLimit {
 				chunks = append(chunks, n.toJSONTable("[\n"+chunk+"]"))
 				chunk = ""
 			}
+			chunk += part
 		}
 	case map[string]map[string]string:
 		// Split the table into chunks
 		for key, row := range data {
 			j, _ := json.Marshal(row)
-			chunk += fmt.Sprintf("%q: %s,\n", key, string(j))
-			if len(chunk) > charLimit {
+			part := fmt.Sprintf("%q: %s,\n", key, string(j))
+			if len(chunk)+len(part) > charLimit {
 				chunks = append(chunks, n.toJSONTable("{\n"+chunk+"}"))
 				chunk = ""
 			}
+			chunk += part
 		}
 	}
 
