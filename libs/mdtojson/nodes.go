@@ -123,7 +123,7 @@ func (n *HeadingNode) ToMarkdown() string {
 	for i := 0; i < n.Level; i++ {
 		level += "#"
 	}
-	return "\n" + level + " " + n.Title + "\n"
+	return level + " " + n.Title + "\n\n"
 }
 
 func NewTextNode(text string) Node {
@@ -299,5 +299,5 @@ func (n *ParagraphNode) SetChildren(children []Node) {
 }
 
 func (n *ParagraphNode) ToMarkdown() string {
-	return "\n"
+	return ""
 }

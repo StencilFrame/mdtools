@@ -47,31 +47,45 @@ func (mc *MarkdownChunk) ChunkMarkdown(markdownData []byte) []string {
 // ChunkJSONMarkdown splits the JSON markdown data into chunks.
 func (mc *MarkdownChunk) ChunkJSONMarkdown(charLimit int, markdownData []mdtojson.Node) []string {
 	chunks := []string{}
+	currentChunk := ""
 
 	for i := 0; i < len(markdownData); i++ {
-		// Add the current node to the section
 		section := markdownData[i].ToMarkdown()
-		length := len(section)
+		sectionLen := len(section)
+		currentChunk += section
 
-		// Process the children of the current node
+		// Process the children of the current node first
 		childs := markdownData[i].GetChildren()
 		if childs != nil {
-			children := mc.ChunkJSONMarkdown(charLimit-length, childs)
-			nn := section
-			for _, child := range children {
-				nn += child
-				if len(nn) > charLimit {
-					chunks = append(chunks, nn)
-					nn = section
-				}
-			}
+			childrenChunks := mc.ChunkJSONMarkdown(charLimit-sectionLen, childs)
 
-			if nn != section {
-				chunks = append(chunks, nn)
+			for _, child := range childrenChunks {
+				// Try to append the child to the current chunk
+				if len(currentChunk)+len(child) > charLimit {
+					// If the current chunk is too large, finalize it
+					chunks = append(chunks, currentChunk)
+					currentChunk = section // Reset to the parent section, continuing the structure
+				}
+				currentChunk += child
 			}
-		} else if section != "" {
-			chunks = append(chunks, section)
 		}
+
+		if markdownData[i].GetType() == "paragraph" {
+			currentChunk += "\n\n"
+		}
+
+		if currentChunk != section {
+			// If the section alone is larger than charLimit, add it as a single chunk
+			if len(currentChunk) > charLimit {
+				chunks = append(chunks, currentChunk)
+				currentChunk = section // Reset to the current section
+			}
+		}
+	}
+
+	// Add any remaining content in currentChunk as the last chunk
+	if len(currentChunk) > 0 {
+		chunks = append(chunks, currentChunk)
 	}
 
 	return chunks
