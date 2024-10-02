@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	ordered "mdtools/libs/ordered_map"
 
 	"github.com/russross/blackfriday/v2"
 )
@@ -318,8 +319,8 @@ func collectTableHeaders(node *blackfriday.Node) []string {
 }
 
 // collectTableRowsRegular collects the rows from a table's TableBody node
-func collectTableRowsRegular(headers []string, node *blackfriday.Node) []map[string]string {
-	var tableData []map[string]string
+func collectTableRowsRegular(headers []string, node *blackfriday.Node) []*ordered.OrderedMap {
+	var tableData []*ordered.OrderedMap
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering && n.Type == blackfriday.TableRow {
 			currentRow := collectRowCells(headers, n)
@@ -329,9 +330,9 @@ func collectTableRowsRegular(headers []string, node *blackfriday.Node) []map[str
 	})
 
 	for i := range tableData {
-		for k, v := range tableData[i] {
+		for k, v := range tableData[i].KVIter() {
 			if k == "" && v == "" {
-				delete(tableData[i], k)
+				tableData[i].Delete(k)
 			}
 		}
 	}
@@ -340,13 +341,14 @@ func collectTableRowsRegular(headers []string, node *blackfriday.Node) []map[str
 }
 
 // collectRowCells collects the cells from a table row node
-func collectRowCells(headers []string, node *blackfriday.Node) map[string]string {
-	rowData := make(map[string]string)
+func collectRowCells(headers []string, node *blackfriday.Node) *ordered.OrderedMap {
+	rowData := ordered.NewOrderedMap()
+	headerIndex := 0
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering && n.Type == blackfriday.TableCell {
-			headerIndex := len(rowData)
 			if headerIndex < len(headers) {
-				rowData[headers[headerIndex]] = extractText(n)
+				rowData.Set(headers[headerIndex], extractText(n))
+				headerIndex++
 			}
 		}
 		return blackfriday.GoToNext
@@ -355,12 +357,12 @@ func collectRowCells(headers []string, node *blackfriday.Node) map[string]string
 }
 
 // collectTableRowsWithKeys collects the rows from a table's TableBody node
-func collectTableRowsWithKeys(headers []string, node *blackfriday.Node) map[string]map[string]string {
-	tableData := make(map[string]map[string]string)
+func collectTableRowsWithKeys(headers []string, node *blackfriday.Node) *ordered.OrderedMap {
+	tableData := ordered.NewOrderedMap()
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering && n.Type == blackfriday.TableRow {
 			key, currentRow := collectRowCellsWithKeys(headers, n)
-			tableData[key] = currentRow
+			tableData.Set(key, currentRow)
 		}
 		return blackfriday.GoToNext
 	})
@@ -368,7 +370,7 @@ func collectTableRowsWithKeys(headers []string, node *blackfriday.Node) map[stri
 }
 
 // collectRowCellsWithKeys collects the cells from a table row node
-func collectRowCellsWithKeys(headers []string, node *blackfriday.Node) (key string, rowData map[string]string) {
+func collectRowCellsWithKeys(headers []string, node *blackfriday.Node) (key string, rowData *ordered.OrderedMap) {
 	firstCell := false
 	rowData = collectRowCells(headers, node)
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
@@ -376,7 +378,7 @@ func collectRowCellsWithKeys(headers []string, node *blackfriday.Node) (key stri
 			if !firstCell {
 				key = extractText(n)
 				firstCell = true
-				delete(rowData, headers[0])
+				rowData.Delete(headers[0])
 				return blackfriday.Terminate
 			}
 		}

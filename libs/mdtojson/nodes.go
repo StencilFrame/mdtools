@@ -3,6 +3,7 @@ package mdtojson
 import (
 	"encoding/json"
 	"fmt"
+	ordered "mdtools/libs/ordered_map"
 )
 
 const (
@@ -214,14 +215,14 @@ func (n *TableNode) toJSONTable(str string) string {
 	return ":::json_table\n" + str + "\n:::\n\n"
 }
 
+// Split the table into chunks
 func (n *TableNode) ChunkTable(firstChunkLimit, nextChunksLimit int) []string {
 	chunks := []string{}
 	chunk := ""
 	limit := firstChunkLimit
 
 	switch data := n.Data.(type) {
-	case []map[string]string:
-		// Split the table into chunks
+	case []*ordered.OrderedMap:
 		for _, row := range data {
 			j, _ := json.Marshal(row)
 			part := string(j) + ",\n"
@@ -232,25 +233,27 @@ func (n *TableNode) ChunkTable(firstChunkLimit, nextChunksLimit int) []string {
 			}
 			chunk += part
 		}
-	case map[string]map[string]string:
-		// Split the table into chunks
-		for key, row := range data {
-			j, _ := json.Marshal(row)
-			part := fmt.Sprintf("%q: %s,\n", key, string(j))
-			if len(chunk)+len(part) > limit {
-				chunks = append(chunks, n.toJSONTable("{\n"+chunk+"}"))
-				chunk = ""
-				limit = nextChunksLimit
+	case *ordered.OrderedMap:
+		for key, r := range data.KVIter() {
+			switch row := r.(type) {
+			case *ordered.OrderedMap:
+				j, _ := json.Marshal(row)
+				part := fmt.Sprintf("%q: %s,\n", key, string(j))
+				if len(chunk)+len(part) > limit {
+					chunks = append(chunks, n.toJSONTable("{\n"+chunk+"}"))
+					chunk = ""
+					limit = nextChunksLimit
+				}
+				chunk += part
 			}
-			chunk += part
 		}
 	}
 
 	if len(chunk) > 0 {
 		switch n.Data.(type) {
-		case []map[string]string:
+		case []*ordered.OrderedMap:
 			chunks = append(chunks, n.toJSONTable("[\n"+chunk+"]"))
-		case map[string]map[string]string:
+		case *ordered.OrderedMap:
 			chunks = append(chunks, n.toJSONTable("{\n"+chunk+"}"))
 		}
 	}
