@@ -59,6 +59,9 @@ func (mc *MarkdownChunk) ChunkJSONMarkdown(charLimit int, markdownData []mdtojso
 				continue
 			}
 			tableChunks := table.ChunkTable(charLimit-len(currentChunk), charLimit)
+			if len(tableChunks) == 0 {
+				continue
+			}
 			chunks = append(chunks, currentChunk+tableChunks[0])
 			chunks = append(chunks, tableChunks[1:]...)
 			currentChunk = ""
