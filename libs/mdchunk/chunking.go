@@ -58,7 +58,10 @@ func (mc *MarkdownChunk) ChunkJSONMarkdown(charLimit int, markdownData []mdtojso
 				fmt.Println("Error: Unable to cast to TableNode")
 				continue
 			}
-			chunks = append(chunks, table.ChunkTable(charLimit)...)
+			tableChunks := table.ChunkTable(charLimit-len(currentChunk), charLimit)
+			chunks = append(chunks, currentChunk+tableChunks[0])
+			chunks = append(chunks, tableChunks[1:]...)
+			currentChunk = ""
 
 			continue
 		}

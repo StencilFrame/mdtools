@@ -214,9 +214,10 @@ func (n *TableNode) toJSONTable(str string) string {
 	return ":::json_table\n" + str + "\n:::\n\n"
 }
 
-func (n *TableNode) ChunkTable(charLimit int) []string {
+func (n *TableNode) ChunkTable(firstChunkLimit, nextChunksLimit int) []string {
 	chunks := []string{}
 	chunk := ""
+	limit := firstChunkLimit
 
 	switch data := n.Data.(type) {
 	case []map[string]string:
@@ -224,9 +225,10 @@ func (n *TableNode) ChunkTable(charLimit int) []string {
 		for _, row := range data {
 			j, _ := json.Marshal(row)
 			part := string(j) + ",\n"
-			if len(chunk)+len(part) > charLimit {
+			if len(chunk)+len(part) > limit {
 				chunks = append(chunks, n.toJSONTable("[\n"+chunk+"]"))
 				chunk = ""
+				limit = nextChunksLimit
 			}
 			chunk += part
 		}
@@ -235,9 +237,10 @@ func (n *TableNode) ChunkTable(charLimit int) []string {
 		for key, row := range data {
 			j, _ := json.Marshal(row)
 			part := fmt.Sprintf("%q: %s,\n", key, string(j))
-			if len(chunk)+len(part) > charLimit {
+			if len(chunk)+len(part) > limit {
 				chunks = append(chunks, n.toJSONTable("{\n"+chunk+"}"))
 				chunk = ""
+				limit = nextChunksLimit
 			}
 			chunk += part
 		}
