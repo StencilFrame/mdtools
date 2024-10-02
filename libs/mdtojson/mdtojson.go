@@ -239,10 +239,7 @@ func extractContent(node *blackfriday.Node) []Node {
 func handleParagraph(node *blackfriday.Node) Node {
 	children := extractContent(node)
 
-	return &BaseNode{
-		Type:     "paragraph",
-		Children: children,
-	}
+	return NewParagraphNode(children)
 }
 
 // handleList processes list nodes and extracts list items

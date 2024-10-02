@@ -66,6 +66,10 @@ type (
 		Language string `json:"language"`
 		Code     string `json:"code"`
 	}
+
+	// ParagraphNode represents a parsed paragraph element
+	// It has no additional fields, but is used to represent a paragraph
+	ParagraphNode BaseNode
 )
 
 func NewBaseNode(t string, content []Node) Node {
@@ -119,7 +123,7 @@ func (n *HeadingNode) ToMarkdown() string {
 	for i := 0; i < n.Level; i++ {
 		level += "#"
 	}
-	return level + " " + n.Title + "\n"
+	return "\n" + level + " " + n.Title + "\n"
 }
 
 func NewTextNode(text string) Node {
@@ -144,7 +148,7 @@ func (n *TextNode) SetChildren(children []Node) {
 }
 
 func (n *TextNode) ToMarkdown() string {
-	return n.Text + "\n"
+	return n.Text
 }
 
 func NewTableNode(data interface{}) Node {
@@ -195,7 +199,7 @@ func (n *LinkNode) SetChildren(children []Node) {
 }
 
 func (n *LinkNode) ToMarkdown() string {
-	return "[" + n.Title + "](" + n.URL + ")\n"
+	return "[" + n.Title + "](" + n.URL + ")\n\n"
 }
 
 func NewImageNode(url, alt string) Node {
@@ -272,5 +276,28 @@ func (n *CodeBlockNode) SetChildren(children []Node) {
 }
 
 func (n *CodeBlockNode) ToMarkdown() string {
-	return "```" + n.Language + "\n" + n.Code + "\n```\n"
+	return "```" + n.Language + "\n" + n.Code + "\n```\n\n"
+}
+
+func NewParagraphNode(children []Node) Node {
+	return &ParagraphNode{
+		Type:     "paragraph",
+		Children: children,
+	}
+}
+
+func (n *ParagraphNode) GetType() string {
+	return n.Type
+}
+
+func (n *ParagraphNode) GetChildren() []Node {
+	return n.Children
+}
+
+func (n *ParagraphNode) SetChildren(children []Node) {
+	n.Children = children
+}
+
+func (n *ParagraphNode) ToMarkdown() string {
+	return "\n"
 }
