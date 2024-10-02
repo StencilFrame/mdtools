@@ -30,7 +30,7 @@
     "type": "list",
     "content": [
       {
-        "type": "list-item",
+        "type": "listitem",
         "content": [
           {
             "type": "paragraph",
@@ -50,7 +50,7 @@
             "type": "list",
             "content": [
               {
-                "type": "list-item",
+                "type": "listitem",
                 "content": [
                   {
                     "type": "paragraph",
