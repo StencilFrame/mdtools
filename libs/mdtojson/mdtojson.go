@@ -61,23 +61,23 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 
 		case blackfriday.Hardbreak:
 			contentNode = &BaseNode{
-				Type: "line-break",
+				Type: NodeTypeLineBreak,
 			}
 
 		case blackfriday.Softbreak:
 			contentNode = &BaseNode{
-				Type: "softbreak",
+				Type: NodeTypeSoftBreak,
 			}
 
 		case blackfriday.HorizontalRule:
 			contentNode = &BaseNode{
-				Type: "line-separator",
+				Type: NodeTypeLineSeparator,
 			}
 
 		case blackfriday.BlockQuote:
 			quoteContent := extractContent(node)
 			contentNode = &BaseNode{
-				Type:     "blockquote",
+				Type:     NodeTypeBlockquote,
 				Children: quoteContent,
 			}
 
@@ -254,7 +254,7 @@ func handleList(node *blackfriday.Node) Node {
 		return blackfriday.GoToNext
 	})
 	return &BaseNode{
-		Type:     "list",
+		Type:     NodeTypeList,
 		Children: listItems,
 	}
 }
@@ -279,7 +279,7 @@ func extractListItems(node *blackfriday.Node) Node {
 	})
 
 	return &BaseNode{
-		Type:     "list-item",
+		Type:     NodeTypeListItem,
 		Children: children,
 	}
 }

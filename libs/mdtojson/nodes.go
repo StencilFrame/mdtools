@@ -5,6 +5,26 @@ import (
 	"fmt"
 )
 
+const (
+	// Node types
+	NodeTypeHeading       = "heading"
+	NodeTypeText          = "text"
+	NodeTypeTable         = "table"
+	NodeTypeLink          = "link"
+	NodeTypeImage         = "image"
+	NodeTypeCode          = "code"
+	NodeTypeCodeBlock     = "codeblock"
+	NodeTypeParagraph     = "paragraph"
+	NodeTypeList          = "list"
+	NodeTypeListItem      = "listitem"
+	NodeTypeBlockquote    = "blockquote"
+	NodeTypeLineBreak     = "linebreak"
+	NodeTypeSoftBreak     = "softbreak"
+	NodeTypeHTMLBlock     = "htmlblock"
+	NodeTypeHTMLSpan      = "htmlspan"
+	NodeTypeLineSeparator = "lineseparator"
+)
+
 type (
 	Node interface {
 		ToMarkdown() string
@@ -77,6 +97,8 @@ type (
 	ParagraphNode BaseNode
 )
 
+// --- BaseNode methods ---
+
 func NewBaseNode(t string, content []Node) Node {
 	return &BaseNode{
 		Type:     t,
@@ -101,10 +123,12 @@ func (n *BaseNode) ToMarkdown() string {
 	return ""
 }
 
+// --- HeadingNode methods ---
+
 func NewHeadingNode(level int, title string) Node {
 	return &HeadingNode{
 		BaseNode: BaseNode{
-			Type: "heading",
+			Type: NodeTypeHeading,
 		},
 		Title: title,
 		Level: level,
@@ -131,10 +155,12 @@ func (n *HeadingNode) ToMarkdown() string {
 	return level + " " + n.Title + "\n\n"
 }
 
+// --- TextNode methods ---
+
 func NewTextNode(text string) Node {
 	return &TextNode{
 		BaseNode: BaseNode{
-			Type: "text",
+			Type: NodeTypeText,
 		},
 		Text: text,
 	}
@@ -156,10 +182,12 @@ func (n *TextNode) ToMarkdown() string {
 	return n.Text
 }
 
+// --- TableNode methods ---
+
 func NewTableNode(data interface{}) Node {
 	return &TableNode{
 		BaseNode: BaseNode{
-			Type: "table",
+			Type: NodeTypeTable,
 		},
 		Data: data,
 	}
@@ -225,10 +253,12 @@ func (n *TableNode) ChunkTable(charLimit int) []string {
 	return chunks
 }
 
+// --- LinkNode methods ---
+
 func NewLinkNode(url, title string) Node {
 	return &LinkNode{
 		BaseNode: BaseNode{
-			Type: "link",
+			Type: NodeTypeLink,
 		},
 		URL:   url,
 		Title: title,
@@ -251,10 +281,12 @@ func (n *LinkNode) ToMarkdown() string {
 	return "[" + n.Title + "](" + n.URL + ")\n\n"
 }
 
+// --- ImageNode methods ---
+
 func NewImageNode(url, alt string) Node {
 	return &ImageNode{
 		BaseNode: BaseNode{
-			Type: "image",
+			Type: NodeTypeImage,
 		},
 		URL: url,
 		Alt: alt,
@@ -277,10 +309,12 @@ func (n *ImageNode) ToMarkdown() string {
 	return "![Image](" + n.URL + ")\n"
 }
 
+// --- CodeNode methods ---
+
 func NewCodeNode(code string) Node {
 	return &CodeNode{
 		BaseNode: BaseNode{
-			Type: "code",
+			Type: NodeTypeCode,
 		},
 		Code: code,
 	}
@@ -302,10 +336,12 @@ func (n *CodeNode) ToMarkdown() string {
 	return "`" + n.Code + "`"
 }
 
+// --- CodeBlockNode methods ---
+
 func NewCodeBlockNode(language, code string) Node {
 	return &CodeBlockNode{
 		BaseNode: BaseNode{
-			Type: "codeblock",
+			Type: NodeTypeCodeBlock,
 		},
 		Language: language,
 		Code:     code,
@@ -328,9 +364,11 @@ func (n *CodeBlockNode) ToMarkdown() string {
 	return "```" + n.Language + "\n" + n.Code + "\n```\n\n"
 }
 
+// --- ParagraphNode methods ---
+
 func NewParagraphNode(children []Node) Node {
 	return &ParagraphNode{
-		Type:     "paragraph",
+		Type:     NodeTypeParagraph,
 		Children: children,
 	}
 }

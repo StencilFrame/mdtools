@@ -51,7 +51,7 @@ func (mc *MarkdownChunk) ChunkJSONMarkdown(charLimit int, markdownData []mdtojso
 	currentChunk := ""
 
 	for i := 0; i < len(markdownData); i++ {
-		if markdownData[i].GetType() == "table" {
+		if markdownData[i].GetType() == mdtojson.NodeTypeTable {
 			// Chunk tables separately
 			table, ok := markdownData[i].(*mdtojson.TableNode)
 			if !ok {
@@ -83,7 +83,7 @@ func (mc *MarkdownChunk) ChunkJSONMarkdown(charLimit int, markdownData []mdtojso
 			}
 		}
 
-		if markdownData[i].GetType() == "paragraph" {
+		if markdownData[i].GetType() == mdtojson.NodeTypeParagraph {
 			currentChunk += "\n\n"
 		}
 
