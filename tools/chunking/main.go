@@ -5,6 +5,7 @@ import (
 	"log"
 	"mdtools/libs/mdchunk"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -24,6 +25,7 @@ func main() {
 	chunks := chunker.ChunkMarkdown(markdownData)
 
 	for i, chunk := range chunks {
+		chunk = strings.TrimSpace(chunk)
 		os.Stdout.WriteString(chunk)
 		l := len(chunk)
 		fmt.Printf("\n\n--- CHUNK BREAK [id: %d, len: %d] ---\n\n", i, l)
