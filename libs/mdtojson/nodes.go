@@ -1,5 +1,10 @@
 package mdtojson
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 type (
 	Node interface {
 		ToMarkdown() string
@@ -173,7 +178,51 @@ func (n *TableNode) SetChildren(children []Node) {
 }
 
 func (n *TableNode) ToMarkdown() string {
-	return ""
+	j, _ := json.Marshal(n.Data)
+	return n.toJSONTable(string(j))
+}
+
+func (n *TableNode) toJSONTable(str string) string {
+	return ":::json_table\n" + str + "\n:::\n\n"
+}
+
+func (n *TableNode) ChunkTable(charLimit int) []string {
+	chunks := []string{}
+	chunk := ""
+
+	switch data := n.Data.(type) {
+	case []map[string]string:
+		// Split the table into chunks
+		for _, row := range data {
+			j, _ := json.Marshal(row)
+			chunk += string(j) + ",\n"
+			if len(chunk) > charLimit {
+				chunks = append(chunks, n.toJSONTable("[\n"+chunk+"]"))
+				chunk = ""
+			}
+		}
+	case map[string]map[string]string:
+		// Split the table into chunks
+		for key, row := range data {
+			j, _ := json.Marshal(row)
+			chunk += fmt.Sprintf("%q: %s,\n", key, string(j))
+			if len(chunk) > charLimit {
+				chunks = append(chunks, n.toJSONTable("{\n"+chunk+"}"))
+				chunk = ""
+			}
+		}
+	}
+
+	if len(chunk) > 0 {
+		switch n.Data.(type) {
+		case []map[string]string:
+			chunks = append(chunks, n.toJSONTable("[\n"+chunk+"]"))
+		case map[string]map[string]string:
+			chunks = append(chunks, n.toJSONTable("{\n"+chunk+"}"))
+		}
+	}
+
+	return chunks
 }
 
 func NewLinkNode(url, title string) Node {

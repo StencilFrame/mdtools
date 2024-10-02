@@ -1,6 +1,7 @@
 package mdchunk
 
 import (
+	"fmt"
 	"io"
 	"mdtools/libs/mdtojson"
 
@@ -50,6 +51,18 @@ func (mc *MarkdownChunk) ChunkJSONMarkdown(charLimit int, markdownData []mdtojso
 	currentChunk := ""
 
 	for i := 0; i < len(markdownData); i++ {
+		if markdownData[i].GetType() == "table" {
+			// Chunk tables separately
+			table, ok := markdownData[i].(*mdtojson.TableNode)
+			if !ok {
+				fmt.Println("Error: Unable to cast to TableNode")
+				continue
+			}
+			chunks = append(chunks, table.ChunkTable(charLimit)...)
+
+			continue
+		}
+
 		section := markdownData[i].ToMarkdown()
 		sectionLen := len(section)
 		currentChunk += section
