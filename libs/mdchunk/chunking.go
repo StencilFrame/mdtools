@@ -11,8 +11,8 @@ import (
 // Token limit per chunk (e.g., 200 tokens)
 const defaultTokenLimit = 200
 
-// Charecter limit per chunk (e.g., 1000 charecters)
-const defaultCharLimit = 1000
+// Charecter limit per chunk (e.g., 4000 charecters)
+const defaultCharLimit = 4000
 
 // MarkdownChunk represents a chunk of the markdown document.
 type MarkdownChunk struct {
