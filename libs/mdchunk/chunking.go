@@ -42,7 +42,7 @@ func (mc *MarkdownChunk) ChunkMarkdown(markdownData []byte) []string {
 		return renderer.RenderNode(io.Discard, n, entering)
 	})
 	nodes := renderer.GetNodes()
-	return mc.ChunkJSONMarkdown(1000, nodes)
+	return mc.ChunkJSONMarkdown(mc.CharCount, nodes)
 }
 
 // ChunkJSONMarkdown splits the JSON markdown data into chunks.
