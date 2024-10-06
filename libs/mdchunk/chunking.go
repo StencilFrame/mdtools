@@ -8,23 +8,25 @@ import (
 	"github.com/stencilframe/mdtools/libs/mdtojson"
 )
 
-// Token limit per chunk (e.g., 200 tokens)
-const defaultTokenLimit = 200
-
 // Charecter limit per chunk (e.g., 4000 charecters)
 const defaultCharLimit = 4000
 
 // MarkdownChunk represents a chunk of the markdown document.
 type MarkdownChunk struct {
-	TokenCount int // Number of tokens in the chunk
-	CharCount  int // Number of charecters in the chunk
+	CharCount int // Number of charecters in the chunk
 }
 
-// NewMarkdownChunk creates a new MarkdownChunk.
-func NewMarkdownChunk() *MarkdownChunk {
+// NewDefaultMarkdownChunk creates a new MarkdownChunk.
+func NewDefaultMarkdownChunk() *MarkdownChunk {
 	return &MarkdownChunk{
-		TokenCount: defaultTokenLimit,
-		CharCount:  defaultCharLimit,
+		CharCount: defaultCharLimit,
+	}
+}
+
+// NewMarkdownChunk creates a new MarkdownChunk with custom charecter limit.
+func NewMarkdownChunk(charLimit int) *MarkdownChunk {
+	return &MarkdownChunk{
+		CharCount: charLimit,
 	}
 }
 

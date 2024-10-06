@@ -22,7 +22,7 @@ func main() {
 		log.Fatalf("Error reading file: %v", err)
 	}
 
-	chunker := mdchunk.NewMarkdownChunk()
+	chunker := mdchunk.NewDefaultMarkdownChunk()
 	chunks := chunker.ChunkMarkdown(markdownData)
 
 	for i, chunk := range chunks {

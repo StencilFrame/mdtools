@@ -51,7 +51,7 @@ func TestChunking(t *testing.T) {
 			assert.NoError(t, err)
 
 			// Initialize a new JSONRenderer
-			chunker := NewMarkdownChunk()
+			chunker := NewMarkdownChunk(1000)
 
 			// Chunk the markdown
 			chunks := chunker.ChunkMarkdown(markdownData)
