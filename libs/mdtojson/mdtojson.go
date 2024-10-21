@@ -222,6 +222,16 @@ func extractContent(node *blackfriday.Node) []Node {
 				codeContent := string(n.Literal)
 				code := NewCodeNode(codeContent)
 				children = append(children, code)
+			case blackfriday.CodeBlock:
+				codeContent := string(n.Literal)
+				language := string(n.CodeBlockData.Info)
+				codeBlock := NewCodeBlockNode(language, codeContent)
+				children = append(children, codeBlock)
+			case blackfriday.BlockQuote:
+				content := extractText(n)
+				item := NewTextNode(content)
+				children = append(children, item)
+				return blackfriday.SkipChildren
 			}
 		}
 		return blackfriday.GoToNext
