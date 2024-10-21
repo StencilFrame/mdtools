@@ -3,7 +3,7 @@ This is a paragraph with an ![image](https://example.com/image.png).
 This is a list with images:
 
 - List item with an ![image](https://example.com/list-image.png)
-  - Nested item with an ![image1]
+    - Nested item with an ![image1]
 
 This is an image reference:
 
