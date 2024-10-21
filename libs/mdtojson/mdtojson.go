@@ -41,21 +41,9 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 
 		case blackfriday.Table:
 			contentNode = handleTable(node)
-			if r.currentHeader != nil {
-				r.currentHeader.SetChildren(append(r.currentHeader.GetChildren(), contentNode))
-			} else {
-				r.nodes = append(r.nodes, contentNode)
-			}
-			return blackfriday.SkipChildren
 
 		case blackfriday.List:
 			contentNode = handleList(node)
-			if r.currentHeader != nil {
-				r.currentHeader.SetChildren(append(r.currentHeader.GetChildren(), contentNode))
-			} else {
-				r.nodes = append(r.nodes, contentNode)
-			}
-			return blackfriday.SkipChildren
 
 		case blackfriday.Paragraph:
 			contentNode = handleParagraph(node)
@@ -109,6 +97,12 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 			} else {
 				r.nodes = append(r.nodes, contentNode)
 			}
+		}
+
+		if node.Type == blackfriday.BlockQuote ||
+			node.Type == blackfriday.Table ||
+			node.Type == blackfriday.List {
+			return blackfriday.SkipChildren
 		}
 	}
 	return blackfriday.GoToNext
