@@ -75,8 +75,9 @@ type (
 	ImageNode struct {
 		BaseNode
 
-		URL string `json:"url"`
-		Alt string `json:"alt"`
+		URL       string `json:"url"`
+		Alt       string `json:"alt"`
+		Reference int    `json:"reference"` // When used as a reference
 	}
 
 	// CodeNode represents a parsed code element
@@ -316,6 +317,10 @@ func (n *ImageNode) SetChildren(children []Node) {
 
 func (n *ImageNode) ToMarkdown() string {
 	return "![Image](" + n.URL + ")\n"
+}
+
+func (n *ImageNode) ToReference() string {
+	return fmt.Sprintf("{IMG:%d}", n.Reference)
 }
 
 // --- CodeNode methods ---

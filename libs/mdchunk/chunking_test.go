@@ -14,33 +14,37 @@ func TestChunking(t *testing.T) {
 		name             string
 		inputFileName    string
 		expectedFileName string
+		chunkSize        int
 	}{
 		{
 			name:             "Headers",
 			inputFileName:    "testdata/headers.md",
 			expectedFileName: "testdata/headers.chunked.md",
+			chunkSize:        1000,
 		},
 		{
 			name:             "Tables",
 			inputFileName:    "testdata/tables.md",
 			expectedFileName: "testdata/tables.chunked.md",
+			chunkSize:        1000,
+		},
+		{
+			name:             "Images",
+			inputFileName:    "testdata/images.md",
+			expectedFileName: "testdata/images.chunked.md",
+			chunkSize:        100,
 		},
 
 		// TODO: Implement the following tests
 		// {
 		// 	name:             "Lists",
 		// 	inputFileName:    "testdata/lists.md",
-		// 	expectedFileName: "testdata/lists.json",
+		// 	expectedFileName: "testdata/lists.chunked.md",
 		// },
 		// {
 		// 	name:             "Links",
 		// 	inputFileName:    "testdata/links.md",
-		// 	expectedFileName: "testdata/links.json",
-		// },
-		// {
-		// 	name:             "Images",
-		// 	inputFileName:    "testdata/images.md",
-		// 	expectedFileName: "testdata/images.json",
+		// 	expectedFileName: "testdata/links.chunked.md",
 		// },
 	}
 
@@ -51,7 +55,7 @@ func TestChunking(t *testing.T) {
 			assert.NoError(t, err)
 
 			// Initialize a new JSONRenderer
-			chunker := NewMarkdownChunk(1000)
+			chunker := NewMarkdownChunk(tt.chunkSize)
 
 			// Chunk the markdown
 			chunks := chunker.ChunkMarkdown(markdownData)

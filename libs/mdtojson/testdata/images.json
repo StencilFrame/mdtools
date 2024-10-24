@@ -9,7 +9,8 @@
       {
         "type": "image",
         "alt": "image",
-        "url": "https://example.com/image.png"
+        "url": "https://example.com/image.png",
+        "reference": ""
       },
       {
         "type": "text",
@@ -42,7 +43,8 @@
               {
                 "type": "image",
                 "alt": "image",
-                "url": "https://example.com/list-image.png"
+                "url": "https://example.com/list-image.png",
+                "reference": ""
               }
             ]
           },
@@ -62,7 +64,8 @@
                       {
                         "type": "image",
                         "alt": "image1",
-                        "url": "https://example.com/nested-image.png"
+                        "url": "https://example.com/nested-image.png",
+                        "reference": ""
                       }
                     ]
                   }
@@ -89,7 +92,8 @@
       {
         "type": "image",
         "alt": "image-b64",
-        "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVBAMAAABbObilAAAAMFBMVEX///9wcHBwcHBwcHBwcHBwcHBwcHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKeozJAAAABnRSTlMAZoiZzN091q78AAAAOElEQVR4XmP8zwADH5ngTAYGarI/KTB8EgLSLCCBTwqfsKnhY/jE8A4m/gDIZYCq5wOJYqqnBhsA1zsKECM4W0sAAAAASUVORK5CYII=\u003e"
+        "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVBAMAAABbObilAAAAMFBMVEX///9wcHBwcHBwcHBwcHBwcHBwcHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKeozJAAAABnRSTlMAZoiZzN091q78AAAAOElEQVR4XmP8zwADH5ngTAYGarI/KTB8EgLSLCCBTwqfsKnhY/jE8A4m/gDIZYCq5wOJYqqnBhsA1zsKECM4W0sAAAAASUVORK5CYII=\u003e",
+        "reference": ""
       }
     ]
   },

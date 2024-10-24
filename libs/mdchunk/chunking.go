@@ -53,7 +53,8 @@ func (mc *MarkdownChunk) ChunkJSONMarkdown(charLimit int, markdownData []mdtojso
 	currentChunk := ""
 
 	for i := 0; i < len(markdownData); i++ {
-		if markdownData[i].GetType() == mdtojson.NodeTypeTable {
+		switch markdownData[i].GetType() {
+		case mdtojson.NodeTypeTable:
 			// Chunk tables separately
 			table, ok := markdownData[i].(*mdtojson.TableNode)
 			if !ok {
@@ -71,6 +72,24 @@ func (mc *MarkdownChunk) ChunkJSONMarkdown(charLimit int, markdownData []mdtojso
 			chunks = append(chunks, tableChunks[:len(tableChunks)-1]...)
 
 			currentChunk = tableChunks[len(tableChunks)-1]
+			// If the current chunk is too large, finalize it
+			if len(currentChunk) > charLimit {
+				chunks = append(chunks, currentChunk)
+				currentChunk = ""
+			}
+
+			continue
+		case mdtojson.NodeTypeImage:
+			// Extract images
+			image, ok := markdownData[i].(*mdtojson.ImageNode)
+			if !ok {
+				fmt.Println("Error: Unable to cast to ImageNode")
+				continue
+			}
+
+			// Add the image reference to the current chunk
+			currentChunk += image.ToReference()
+
 			// If the current chunk is too large, finalize it
 			if len(currentChunk) > charLimit {
 				chunks = append(chunks, currentChunk)

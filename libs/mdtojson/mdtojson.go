@@ -13,17 +13,17 @@ import (
 type (
 	// Custom JSON Renderer
 	JSONRenderer struct {
-		nodes         []Node            // Root-level nodes
-		headerStack   []*HeadingNode    // Stack to manage nested headers
-		currentHeader *HeadingNode      // Current header node
-		imageRefs     map[string]string // Stores image references (e.g., [image1]: <url>) // TODO: Implement image handling
+		nodes         []Node         // Root-level nodes
+		headerStack   []*HeadingNode // Stack to manage nested headers
+		currentHeader *HeadingNode   // Current header node
+		imageRefs     []Node         // Stores image references (e.g., [1]: <image>, [2]: <image>)
 	}
 )
 
 // NewJSONRenderer creates a new JSONRenderer instance
 func NewJSONRenderer() *JSONRenderer {
 	return &JSONRenderer{
-		imageRefs: make(map[string]string),
+		imageRefs: []Node{},
 	}
 }
 
@@ -216,6 +216,9 @@ func (r *JSONRenderer) extractContent(node *blackfriday.Node) []Node {
 				return blackfriday.SkipChildren
 			case blackfriday.Image:
 				image := NewImageNode(string(n.LinkData.Destination), extractText(n))
+				ref := r.addImage(image)
+				// Update the image reference
+				image.(*ImageNode).Reference = ref
 				children = append(children, image)
 				return blackfriday.SkipChildren
 			case blackfriday.Code:
@@ -389,4 +392,18 @@ func (r *JSONRenderer) collectRowCellsWithKeys(headers []string, node *blackfrid
 		return blackfriday.GoToNext
 	})
 	return key, rowData
+}
+
+// addImage adds an image reference to the imageRefs map
+func (r *JSONRenderer) addImage(image Node) int {
+	// Check if the image reference already exists
+	for i, ref := range r.imageRefs {
+		if ref.(*ImageNode).URL == image.(*ImageNode).URL {
+			return i + 1
+		}
+	}
+
+	// Add new image reference
+	r.imageRefs = append(r.imageRefs, image)
+	return len(r.imageRefs)
 }
