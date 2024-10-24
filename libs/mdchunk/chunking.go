@@ -64,9 +64,18 @@ func (mc *MarkdownChunk) ChunkJSONMarkdown(charLimit int, markdownData []mdtojso
 			if len(tableChunks) == 0 {
 				continue
 			}
-			chunks = append(chunks, currentChunk+tableChunks[0])
-			chunks = append(chunks, tableChunks[1:]...)
-			currentChunk = ""
+
+			// Append the first table chunk to the current chunk
+			tableChunks[0] = currentChunk + tableChunks[0]
+			// Append all but the last table chunk to the chunks list
+			chunks = append(chunks, tableChunks[:len(tableChunks)-1]...)
+
+			currentChunk = tableChunks[len(tableChunks)-1]
+			// If the current chunk is too large, finalize it
+			if len(currentChunk) > charLimit {
+				chunks = append(chunks, currentChunk)
+				currentChunk = ""
+			}
 
 			continue
 		}

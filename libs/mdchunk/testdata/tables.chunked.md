@@ -128,6 +128,14 @@ A small table with a header row.
 
 ## Simple table 3
 
+This is a small table:
+
+:::json_table
+[
+{"Header 1":"Cell 1","Header 2":"Cell 2"},
+]
+:::
+
 This is a table with a header row and a header column.
 
 Second paragraph.
@@ -148,12 +156,10 @@ Second paragraph.
 "Row 12": {"Header 1":"Cell 23","Header 2":"Cell 24"},
 "Row 13": {"Header 1":"Cell 25","Header 2":"Cell 26"},
 "Row 14": {"Header 1":"Cell 27","Header 2":"Cell 28"},
-"Row 15": {"Header 1":"Cell 29","Header 2":"Cell 30"},
-"Row 16": {"Header 1":"Cell 31","Header 2":"Cell 32"},
 }
 :::
 
---- CHUNK BREAK [id: 5, len: 987] ---
+--- CHUNK BREAK [id: 5, len: 967] ---
 
 # Tables
 
@@ -161,6 +167,8 @@ Second paragraph.
 
 :::json_table
 {
+"Row 15": {"Header 1":"Cell 29","Header 2":"Cell 30"},
+"Row 16": {"Header 1":"Cell 31","Header 2":"Cell 32"},
 "Row 17": {"Header 1":"Cell 33","Header 2":"Cell 34"},
 "Row 18": {"Header 1":"Cell 35","Header 2":"Cell 36"},
 "Row 19": {"Header 1":"Cell 37","Header 2":"Cell 38"},
@@ -180,5 +188,5 @@ Second paragraph.
 
 The end.
 
---- CHUNK BREAK [id: 6, len: 830] ---
+--- CHUNK BREAK [id: 6, len: 940] ---
 

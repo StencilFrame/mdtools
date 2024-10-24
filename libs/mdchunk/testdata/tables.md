@@ -77,6 +77,12 @@ Cell 9 | Cell 10 | |
 
 ## Simple table 3
 
+This is a small table:
+
+| Header 1 | Header 2 |
+| -------- | -------- |
+| Cell 1 | Cell 2 |
+
 This is a table with a header row and a header column.
 
 Second paragraph.
