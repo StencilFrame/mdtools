@@ -23,12 +23,18 @@ func main() {
 	}
 
 	chunker := mdchunk.NewDefaultMarkdownChunk()
-	chunks := chunker.ChunkMarkdown(markdownData)
+	chunks, images := chunker.ChunkMarkdown(markdownData)
 
 	for i, chunk := range chunks {
 		chunk = strings.TrimSpace(chunk)
 		os.Stdout.WriteString(chunk)
 		l := len(chunk)
 		fmt.Printf("\n\n--- CHUNK BREAK [id: %d, len: %d] ---\n\n", i, l)
+	}
+
+	// Print the images
+	fmt.Println("\n\n--- IMAGES ---")
+	for i, img := range images {
+		fmt.Printf("IMG%d: %s\n", i, img)
 	}
 }

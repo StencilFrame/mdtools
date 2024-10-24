@@ -79,7 +79,7 @@ func TestChunking(t *testing.T) {
 			if tt.expectedImagesFileName != "" {
 				expectedImagesData, err := os.ReadFile(tt.expectedImagesFileName)
 				assert.NoError(t, err)
-				expectedImages := []string{}
+				expectedImages := map[int]string{}
 				err = json.Unmarshal(expectedImagesData, &expectedImages)
 				assert.NoError(t, err)
 				// NOTICE the order of the images is important
