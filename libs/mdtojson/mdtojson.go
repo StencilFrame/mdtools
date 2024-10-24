@@ -407,3 +407,12 @@ func (r *JSONRenderer) addImage(image Node) int {
 	r.imageRefs = append(r.imageRefs, image)
 	return len(r.imageRefs)
 }
+
+// GetImageURLs returns the image references
+func (r *JSONRenderer) GetImageURLs() []string {
+	images := []string{}
+	for _, image := range r.imageRefs {
+		images = append(images, image.(*ImageNode).URL)
+	}
+	return images
+}

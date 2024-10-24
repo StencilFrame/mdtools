@@ -1,0 +1,6 @@
+[
+    "https://example.com/image.png",
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAVBAMAAABbObilAAAAMFBMVEX///9wcHBwcHBwcHBwcHBwcHBwcHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKeozJAAAABnRSTlMAZoiZzN091q78AAAAOElEQVR4XmP8zwADH5ngTAYGarI/KTB8EgLSLCCBTwqfsKnhY/jE8A4m/gDIZYCq5wOJYqqnBhsA1zsKECM4W0sAAAAASUVORK5CYII=>",
+    "https://example.com/list-image.png",
+    "https://example.com/nested-image.png"
+]

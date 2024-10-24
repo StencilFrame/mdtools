@@ -1,6 +1,7 @@
 package mdchunk
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -11,28 +12,30 @@ import (
 
 func TestChunking(t *testing.T) {
 	tests := []struct {
-		name             string
-		inputFileName    string
-		expectedFileName string
-		chunkSize        int
+		name                   string
+		inputFileName          string
+		expectedChunksFileName string
+		expectedImagesFileName string
+		chunkSize              int
 	}{
 		{
-			name:             "Headers",
-			inputFileName:    "testdata/headers.md",
-			expectedFileName: "testdata/headers.chunked.md",
-			chunkSize:        1000,
+			name:                   "Headers",
+			inputFileName:          "testdata/headers.md",
+			expectedChunksFileName: "testdata/headers.chunked.md",
+			chunkSize:              1000,
 		},
 		{
-			name:             "Tables",
-			inputFileName:    "testdata/tables.md",
-			expectedFileName: "testdata/tables.chunked.md",
-			chunkSize:        1000,
+			name:                   "Tables",
+			inputFileName:          "testdata/tables.md",
+			expectedChunksFileName: "testdata/tables.chunked.md",
+			chunkSize:              1000,
 		},
 		{
-			name:             "Images",
-			inputFileName:    "testdata/images.md",
-			expectedFileName: "testdata/images.chunked.md",
-			chunkSize:        100,
+			name:                   "Images",
+			inputFileName:          "testdata/images.md",
+			expectedChunksFileName: "testdata/images.chunked.md",
+			expectedImagesFileName: "testdata/images.chunked.json",
+			chunkSize:              100,
 		},
 
 		// TODO: Implement the following tests
@@ -58,7 +61,7 @@ func TestChunking(t *testing.T) {
 			chunker := NewMarkdownChunk(tt.chunkSize)
 
 			// Chunk the markdown
-			chunks := chunker.ChunkMarkdown(markdownData)
+			chunks, images := chunker.ChunkMarkdown(markdownData)
 
 			results := ""
 			for i, chunk := range chunks {
@@ -68,9 +71,20 @@ func TestChunking(t *testing.T) {
 			}
 
 			// Assert the resulting JSON
-			expectedData, err := os.ReadFile(tt.expectedFileName)
+			expectedData, err := os.ReadFile(tt.expectedChunksFileName)
 			assert.NoError(t, err)
 			assert.Equal(t, string(expectedData), results)
+
+			// Assert the images
+			if tt.expectedImagesFileName != "" {
+				expectedImagesData, err := os.ReadFile(tt.expectedImagesFileName)
+				assert.NoError(t, err)
+				expectedImages := []string{}
+				err = json.Unmarshal(expectedImagesData, &expectedImages)
+				assert.NoError(t, err)
+				// NOTICE the order of the images is important
+				assert.Equal(t, expectedImages, images)
+			}
 		})
 	}
 }
