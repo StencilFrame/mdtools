@@ -31,7 +31,7 @@ func NewMarkdownChunk(charLimit int) *MarkdownChunk {
 }
 
 // ChunkMarkdown splits the markdown data into chunks.
-func (mc *MarkdownChunk) ChunkMarkdown(markdownData []byte) (chunks []string, images map[int]string) {
+func (mc *MarkdownChunk) ChunkMarkdown(markdownData []byte) (chunks []string, images map[string]string) {
 	// Parse the markdown into a syntax tree
 	parser := blackfriday.New(blackfriday.WithExtensions(blackfriday.CommonExtensions | blackfriday.AutoHeadingIDs | blackfriday.Tables))
 	node := parser.Parse(markdownData)

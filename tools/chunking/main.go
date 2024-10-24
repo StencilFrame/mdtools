@@ -34,7 +34,7 @@ func main() {
 
 	// Print the images
 	fmt.Println("\n\n--- IMAGES ---")
-	for i, img := range images {
-		fmt.Printf("IMG%d: %s\n", i, img)
+	for ref, img := range images {
+		fmt.Printf("%s: %s\n", ref, img)
 	}
 }
