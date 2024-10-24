@@ -40,13 +40,13 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 			r.handleHeader(node)
 
 		case blackfriday.Table:
-			contentNode = handleTable(node)
+			contentNode = r.handleTable(node)
 
 		case blackfriday.List:
-			contentNode = handleList(node)
+			contentNode = r.handleList(node)
 
 		case blackfriday.Paragraph:
-			contentNode = handleParagraph(node)
+			contentNode = r.handleParagraph(node)
 
 		case blackfriday.Hardbreak:
 			contentNode = &BaseNode{
@@ -64,7 +64,7 @@ func (r *JSONRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering 
 			}
 
 		case blackfriday.BlockQuote:
-			quoteContent := extractContent(node)
+			quoteContent := r.extractContent(node)
 			contentNode = &BaseNode{
 				Type:     NodeTypeBlockquote,
 				Children: quoteContent,
@@ -194,7 +194,7 @@ func extractText(node *blackfriday.Node) string {
 }
 
 // extractContent handles text nodes, links, images, and inline elements.
-func extractContent(node *blackfriday.Node) []Node {
+func (r *JSONRenderer) extractContent(node *blackfriday.Node) []Node {
 	children := []Node{}
 
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
@@ -241,18 +241,18 @@ func extractContent(node *blackfriday.Node) []Node {
 }
 
 // handleParagraph processes paragraph nodes and extracts text content
-func handleParagraph(node *blackfriday.Node) Node {
-	children := extractContent(node)
+func (r *JSONRenderer) handleParagraph(node *blackfriday.Node) Node {
+	children := r.extractContent(node)
 
 	return NewParagraphNode(children)
 }
 
 // handleList processes list nodes and extracts list items
-func handleList(node *blackfriday.Node) Node {
+func (r *JSONRenderer) handleList(node *blackfriday.Node) Node {
 	var listItems []Node
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering && n.Type == blackfriday.Item {
-			listItem := extractListItems(n)
+			listItem := r.extractListItems(n)
 			listItems = append(listItems, listItem)
 			return blackfriday.SkipChildren
 		}
@@ -265,18 +265,18 @@ func handleList(node *blackfriday.Node) Node {
 }
 
 // extractListItems extracts list items from a list node
-func extractListItems(node *blackfriday.Node) Node {
+func (r *JSONRenderer) extractListItems(node *blackfriday.Node) Node {
 	children := []Node{}
 
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering {
 			switch n.Type {
 			case blackfriday.List:
-				list := handleList(n)
+				list := r.handleList(n)
 				children = append(children, list)
 				return blackfriday.SkipChildren
 			case blackfriday.Item:
-				listItem := handleParagraph(n)
+				listItem := r.handleParagraph(n)
 				children = append(children, listItem)
 			}
 		}
@@ -290,19 +290,19 @@ func extractListItems(node *blackfriday.Node) Node {
 }
 
 // handleTable processes table nodes and extracts rows and cells
-func handleTable(node *blackfriday.Node) Node {
+func (r *JSONRenderer) handleTable(node *blackfriday.Node) Node {
 	var tableData interface{}
 	var headers []string
 
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		switch n.Type {
 		case blackfriday.TableHead:
-			headers = collectTableHeaders(n)
+			headers = r.collectTableHeaders(n)
 		case blackfriday.TableBody:
 			if headers[0] == "" {
-				tableData = collectTableRowsWithKeys(headers, n)
+				tableData = r.collectTableRowsWithKeys(headers, n)
 			} else {
-				tableData = collectTableRowsRegular(headers, n)
+				tableData = r.collectTableRowsRegular(headers, n)
 			}
 		}
 		return blackfriday.GoToNext
@@ -311,7 +311,7 @@ func handleTable(node *blackfriday.Node) Node {
 }
 
 // collectTableHeaders collects the headers from the table's TableHead node
-func collectTableHeaders(node *blackfriday.Node) []string {
+func (r *JSONRenderer) collectTableHeaders(node *blackfriday.Node) []string {
 	var headers []string
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering && n.Type == blackfriday.TableCell {
@@ -323,11 +323,11 @@ func collectTableHeaders(node *blackfriday.Node) []string {
 }
 
 // collectTableRowsRegular collects the rows from a table's TableBody node
-func collectTableRowsRegular(headers []string, node *blackfriday.Node) []*ordered.OrderedMap {
+func (r *JSONRenderer) collectTableRowsRegular(headers []string, node *blackfriday.Node) []*ordered.OrderedMap {
 	var tableData []*ordered.OrderedMap
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering && n.Type == blackfriday.TableRow {
-			currentRow := collectRowCells(headers, n)
+			currentRow := r.collectRowCells(headers, n)
 			tableData = append(tableData, currentRow)
 		}
 		return blackfriday.GoToNext
@@ -345,7 +345,7 @@ func collectTableRowsRegular(headers []string, node *blackfriday.Node) []*ordere
 }
 
 // collectRowCells collects the cells from a table row node
-func collectRowCells(headers []string, node *blackfriday.Node) *ordered.OrderedMap {
+func (r *JSONRenderer) collectRowCells(headers []string, node *blackfriday.Node) *ordered.OrderedMap {
 	rowData := ordered.NewOrderedMap()
 	headerIndex := 0
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
@@ -361,11 +361,11 @@ func collectRowCells(headers []string, node *blackfriday.Node) *ordered.OrderedM
 }
 
 // collectTableRowsWithKeys collects the rows from a table's TableBody node
-func collectTableRowsWithKeys(headers []string, node *blackfriday.Node) *ordered.OrderedMap {
+func (r *JSONRenderer) collectTableRowsWithKeys(headers []string, node *blackfriday.Node) *ordered.OrderedMap {
 	tableData := ordered.NewOrderedMap()
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering && n.Type == blackfriday.TableRow {
-			key, currentRow := collectRowCellsWithKeys(headers, n)
+			key, currentRow := r.collectRowCellsWithKeys(headers, n)
 			tableData.Set(key, currentRow)
 		}
 		return blackfriday.GoToNext
@@ -374,9 +374,9 @@ func collectTableRowsWithKeys(headers []string, node *blackfriday.Node) *ordered
 }
 
 // collectRowCellsWithKeys collects the cells from a table row node
-func collectRowCellsWithKeys(headers []string, node *blackfriday.Node) (key string, rowData *ordered.OrderedMap) {
+func (r *JSONRenderer) collectRowCellsWithKeys(headers []string, node *blackfriday.Node) (key string, rowData *ordered.OrderedMap) {
 	firstCell := false
-	rowData = collectRowCells(headers, node)
+	rowData = r.collectRowCells(headers, node)
 	node.Walk(func(n *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 		if entering && n.Type == blackfriday.TableCell {
 			if !firstCell {
