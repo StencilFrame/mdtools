@@ -11,8 +11,7 @@ List item with an {IMG:3}
 Nested item with an {IMG:4}
 
 This is an image reference:
+{IMG:2}{IMG:2}
 
-{IMG:2}
-
---- CHUNK BREAK [id: 1, len: 92] ---
+--- CHUNK BREAK [id: 1, len: 98] ---
 

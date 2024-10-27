@@ -8,8 +8,7 @@ This is a list with images:
     - Nested item with an ![image1]
 
 This is an image reference:
-
-![image-b64]
+![image-b64]![image-b64]
 
 ---
 
