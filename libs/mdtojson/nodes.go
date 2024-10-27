@@ -3,6 +3,7 @@ package mdtojson
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	ordered "github.com/stencilframe/mdtools/libs/ordered_map"
 )
@@ -294,6 +295,12 @@ func (n *LinkNode) ToMarkdown() string {
 // --- ImageNode methods ---
 
 func NewImageNode(url, alt string) Node {
+	// Cleanup base64 urls as they might contain wrong characters
+	// TODO: this is a bug in the Blackfriday library. Remove this when fixed
+	if len(url) > 5 && url[:5] == "data:" {
+		url = strings.TrimRight(url, ">")
+	}
+
 	return &ImageNode{
 		BaseNode: BaseNode{
 			Type: NodeTypeImage,
